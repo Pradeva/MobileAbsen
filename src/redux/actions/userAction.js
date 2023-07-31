@@ -34,7 +34,7 @@ export const fetchLogin = createAsyncThunk('user/fetchLogin', async({
     password
 }, thunkAPI) => {
     try {
-        const response = await axios.post('http://192.168.43.22:8000/api/authenticate', { email, password });
+        const response = await axios.post('http://172.20.10.3:8000/api/authenticate', { email, password });
         const data = response.data;
     if (data.success) {
         let profile =
@@ -57,15 +57,41 @@ export const fetchLogin = createAsyncThunk('user/fetchLogin', async({
 }
 })
 
-export const fetchLogAbsen = createAsyncThunk('user/fetchLogAbsen', async() =>  {
-  try {
-    const response = await axios.get(`http://192.168.43.22:8000/api/log_absen`);
-    const logAbsenData = response.data;
-    dispatch({ type: 'SET_LOG_ABSEN', payload: logAbsenData });
-} catch (err) {
-    dispatch(openModal({type: "Information", message: "Gagal Mengambil Data"}))
-    return null
-  } 
+// export const fetchLogAbsen = createAsyncThunk('user/fetchLogAbsen', async() =>  {
+//   try {
+//     const response = await axios.get(`http://172.20.10.3:8000/api/log_absen`);
+//     console.log(response)
+//     const logAbsenData = response.data;
+//     return logAbsenData;
+// } catch (err) {
+//     dispatch(openModal({type: "Information", message: "Gagal Mengambil Data"}))
+//     return []
+//   } 
+// })
+
+export const fetchLogAbsen = createAsyncThunk('user/fetchLogAbsen', async({idUser}, thunkAPI) => {
+    try {
+        console.log(idUser)
+        const response = await fetch(`http://172.20.10.3:8000/api/log_absen?users_id=${idUser}`, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                // "Authorization": "Bearer " + token,
+            }
+        });
+        if (response.status === 200) {
+            const responseJson = await response.json();
+            const dataResponse = responseJson.list
+            return dataResponse
+        }
+        else{
+            dispatch(openModal({type: "Information", message: "Gagal Mengambil Data"}))
+            return []
+        }
+    } catch (err) {
+        dispatch(openModal({type: "Information", message: "Gagal Mengambil Data"}))
+        return []
+    } 
 })
 
 export const fetchLogout = createAsyncThunk('user/fetchLogout', async() => {

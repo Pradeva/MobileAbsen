@@ -3,7 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useSelector } from 'react-redux';
 import { BottomTabNavigator } from './index';
 import ROUTES from './Routes';
-import { Login, BluetoothBle, DashHeader, Home, Carousel, MqttHome, ListDataComponent } from '../screens';
+import { Login, BluetoothBle, DashHeader, Home, Carousel, MqttHome, ListData } from '../screens';
 
 const Stack = createNativeStackNavigator();
 
@@ -48,7 +48,7 @@ const StackNavigator = () => {
                     headerShown: false
                 }}
             />
-            <Stack.Screen name={ROUTES.DEMOLISTVIEW} component={ListDataComponent}
+            <Stack.Screen name={ROUTES.DEMOLISTVIEW} component={ListData}
                 options={{
                     headerShown: false
                 }}

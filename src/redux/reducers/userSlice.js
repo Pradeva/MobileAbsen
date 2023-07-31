@@ -3,11 +3,12 @@ import { initLogin, fetchLogin, fetchLogout, generateCaptcha, fetchLogAbsen } fr
 
 export const initialState = {
     dataProfile: null,
-    logAbsen : [],
+    logAbsenData : [],
     isLoading: false,
     dataCaptcha: [],
     textCaptcha: ""
 }
+
 
 export const userSlice = createSlice({
     name: 'user',
@@ -43,9 +44,7 @@ export const userSlice = createSlice({
             state.isLoading = true;
         })
         builder.addCase(fetchLogAbsen.fulfilled, (state, action) => {
-            state.logAbsen = action.payload;
-            initialState.logAbsen = action.payload;
-            // console.log(action.payload);
+            state.logAbsenData = action.payload;
             state.isLoading = false;
         })
         //fetchLogout
