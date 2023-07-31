@@ -57,16 +57,25 @@ export const fetchLogin = createAsyncThunk('user/fetchLogin', async({
 }
 })
 
-export const fetchLogAbsen = createAsyncThunk('user/fetchLogAbsen', async() =>  {
-  try {
-    const response = await axios.get(`http://192.168.43.22:8000/api/log_absen`);
-    const logAbsenData = response.data;
-    dispatch({ type: 'SET_LOG_ABSEN', payload: logAbsenData });
-} catch (err) {
-    dispatch(openModal({type: "Information", message: "Gagal Mengambil Data"}))
-    return null
-  } 
-})
+
+export const fetchLogAbsen = createAsyncThunk('user/fetchLogAbsen', async(_, { dispatch, rejectWithValue }) => {
+    try {
+    const loggedInUserId = state.user.loggedInUserId;
+    console.log(1);
+
+    if (!loggedInUserId) {
+      // Jika loggedInUserId tidak ada (karyawan belum login), kembalikan data kosong
+      return [];
+    }
+      const response = await axios.get(`http://192.168.43.22:8000/api/log_absen?users_id=${loggedInUserId}`);
+      const logAbsenData = response.data;
+      dispatch({ type: 'SET_LOG_ABSEN', payload: logAbsenData });
+      return logAbsenData;
+    } catch (err) {
+      // Gunakan rejectWithValue untuk mengembalikan pesan kesalahan atau data khusus jika ada kesalahan
+      return rejectWithValue("Gagal mengambil data");
+    }
+  });
 
 export const fetchLogout = createAsyncThunk('user/fetchLogout', async() => {
 await AsyncStorage.removeItem('profileAsync');

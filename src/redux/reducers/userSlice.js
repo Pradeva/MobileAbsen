@@ -17,7 +17,10 @@ export const userSlice = createSlice({
             const generate = generateCaptcha()
             state.dataCaptcha = generate.arrCaptcha;
             state.textCaptcha = generate.captcha;
-        }
+        },
+        setLoggedInUserId: (state, action) => {
+            state.loggedInUserId = action.payload;
+        },
     },
     extraReducers: (builder) => {
         //initLogin
@@ -36,18 +39,17 @@ export const userSlice = createSlice({
         builder.addCase(fetchLogin.rejected, (state, action) => {
             state.isLoading = false;
         })
-        builder.addCase(fetchLogAbsen.rejected, (state, action) => {
-            state.isLoading = false;
-        })
         builder.addCase(fetchLogAbsen.pending, (state, action) => {
             state.isLoading = true;
         })
         builder.addCase(fetchLogAbsen.fulfilled, (state, action) => {
             state.logAbsen = action.payload;
-            initialState.logAbsen = action.payload;
-            // console.log(action.payload);
             state.isLoading = false;
         })
+        builder.addCase(fetchLogAbsen.rejected, (state, action) => {
+            state.isLoading = false;
+        })
+        
         //fetchLogout
         builder.addCase(fetchLogout.pending, (state, action) => {
             state.isLoading = true;
@@ -60,4 +62,5 @@ export const userSlice = createSlice({
 })
 
 export const { getCaptcha } = userSlice.actions;
+export const { setLoggedInUserId } = userSlice.actions;
 export default userSlice.reducer;
