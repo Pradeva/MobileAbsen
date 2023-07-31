@@ -9,5 +9,7 @@ export default {
     CAROUSEL: 'CarouselScreen',
     HOME: 'HomeScreen',
     MQTT: 'MqttScreen',
-    DEMOLISTVIEW: 'DemoListViewScreen'
+    DEMOLISTVIEW: 'DemoListViewScreen',
+    CUTI: 'ListDataCutiScreen',
+    LEMBUR: 'ListDataLemburScreen'
 }

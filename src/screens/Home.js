@@ -20,6 +20,8 @@ export default function Home() {
                 <ButtonText onPress={() => navigation.navigate(ROUTES.CAROUSEL)}>Carousel</ButtonText>
                 <ButtonText onPress={() => navigation.navigate(ROUTES.MQTT)}>MQTT</ButtonText>
                 <ButtonText onPress={() => navigation.navigate(ROUTES.DEMOLISTVIEW)}>List View Data Presensi</ButtonText>
+                <ButtonText onPress={() => navigation.navigate(ROUTES.CUTI)}>List View Data Cuti</ButtonText>
+                <ButtonText onPress={() => navigation.navigate(ROUTES.LEMBUR)}>List View Data Lembur</ButtonText>
                 <ButtonText onPress={() => dispatch(fetchLogout())}>SIGN OUT</ButtonText>
             </ScrollView>
         </ContainerView>
