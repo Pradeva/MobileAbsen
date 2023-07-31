@@ -4,9 +4,13 @@ import { ButtonText, ContainerView, ModalLoader } from '../components';
 //Navigation
 import { useNavigation } from '@react-navigation/native';
 import { ROUTES } from '../navigations';
+//Redux
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchLogout } from '../redux/actions/userAction';
 
 export default function Home() {
     const navigation = useNavigation()
+    const dispatch = useDispatch()
     return (
         <ContainerView>
             <ScrollView contentContainerStyle={{ paddingBottom: 80 }} showsVerticalScrollIndicator={false}>
@@ -16,6 +20,7 @@ export default function Home() {
                 <ButtonText onPress={() => navigation.navigate(ROUTES.CAROUSEL)}>Carousel</ButtonText>
                 <ButtonText onPress={() => navigation.navigate(ROUTES.MQTT)}>MQTT</ButtonText>
                 <ButtonText onPress={() => navigation.navigate(ROUTES.DEMOLISTVIEW)}>List View</ButtonText>
+                <ButtonText onPress={() => dispatch(fetchLogout())}>SIGN OUT</ButtonText>
             </ScrollView>
         </ContainerView>
     )

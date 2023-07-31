@@ -14,7 +14,7 @@ const StartedApp = () => {
 
     setTimeout(function () {
         setIsOpeningPage(false)
-    }.bind(this), 5000);
+    }.bind(this), 3000);
 
     const dispatch = useDispatch()
     const init = () => dispatch(initLogin());

@@ -1,8 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { initLogin, fetchLogin, fetchLogout, generateCaptcha } from "../actions/userAction";
+import { initLogin, fetchLogin, fetchLogout, generateCaptcha, fetchLogAbsen } from "../actions/userAction";
 
-const initialState = {
+export const initialState = {
     dataProfile: null,
+    logAbsen : [],
     isLoading: false,
     dataCaptcha: [],
     textCaptcha: ""
@@ -29,9 +30,22 @@ export const userSlice = createSlice({
         })
         builder.addCase(fetchLogin.fulfilled, (state, action) => {
             state.dataProfile = action.payload;
+            initialState.dataProfile = action.payload;
             state.isLoading = false;
         })
         builder.addCase(fetchLogin.rejected, (state, action) => {
+            state.isLoading = false;
+        })
+        builder.addCase(fetchLogAbsen.rejected, (state, action) => {
+            state.isLoading = false;
+        })
+        builder.addCase(fetchLogAbsen.pending, (state, action) => {
+            state.isLoading = true;
+        })
+        builder.addCase(fetchLogAbsen.fulfilled, (state, action) => {
+            state.logAbsen = action.payload;
+            initialState.logAbsen = action.payload;
+            // console.log(action.payload);
             state.isLoading = false;
         })
         //fetchLogout

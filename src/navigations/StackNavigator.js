@@ -11,7 +11,7 @@ const StackNavigator = () => {
     const { dataProfile } = useSelector(state => state.user)
     return (
         <Stack.Navigator
-            // initialRouteName={dataProfile === null ? ROUTES.LOGIN : ROUTES.BLUETOOTH}
+            initialRouteName={dataProfile === null ? ROUTES.LOGIN : ROUTES.HOME}
         >
             <Stack.Screen name={ROUTES.LOGIN} component={Login}
                 options={{

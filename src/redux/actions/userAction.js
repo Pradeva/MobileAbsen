@@ -1,5 +1,6 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
-import { openModal } from "../reducers/alertSlice";
+import {createAsyncThunk} from "@reduxjs/toolkit";
+import {openModal} from "../reducers/alertSlice";
+import axios from 'axios';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const generateCaptcha = () => {
@@ -18,66 +19,56 @@ export const generateCaptcha = () => {
         }
 
         textCaptcha += charsArray[index];
-        captcha.push({
-            text: charsArray[index],
-            textColor: color
-        });
+        captcha.push({text: charsArray[index], textColor: color});
     }
-    return ({
-        arrCaptcha: captcha,
-        captcha: textCaptcha
-    })
+    return ({arrCaptcha: captcha, captcha: textCaptcha})
 }
 
-export const initLogin = createAsyncThunk(
-    'user/initLogin',
-    async () => {
-        const profile = await AsyncStorage.getItem('profileAsync')
-        return JSON.parse(profile)
-    }
-)
+export const initLogin = createAsyncThunk('user/initLogin', async() => {
+    const profile = await AsyncStorage.getItem('profileAsync')
+    return JSON.parse(profile)
+})
 
-export const fetchLogin = createAsyncThunk(
-    'user/fetchLogin',
-    async ({ userName, userPass }, thunkAPI) => {
-        try {
-            if (userName.trim() === "12345" && userPass.trim() === "12345") {
-                let profile = {
-                    userName: userName.trim(),
-                    userPass: userPass.trim(),
-                    id: 1,
-                    member_name: "Telkom Property",
-                    member_address: "Bandung",
-                    member_profil: null,
-                    member_email: "telkomproperty@telkom.id",
-                    member_nip: "1234567890",
-                    member_phone: "081211122234",
-                    member_role: "Teknisi",
-                    member_gender: "L",
-                    member_jabatan: "Teknisi",
-                    status_martial: "Married",
-                    blood_type: "B",
-                    token: "-",
-                };
-                await AsyncStorage.setItem('profileAsync', JSON.stringify(profile));
-                return profile
-            }
-            else {
-                thunkAPI.dispatch(openModal({ type: "Information", message: "Nama Pengguna / Sandi Salah" }))
-                return null
-            }
-        } catch (err) {
-            thunkAPI.dispatch(openModal({ type: "Information", message: "Nama Pengguna / Sandi Salah" }))
-            // return thunkAPI.rejectWithValue("Nama Pengguna / Sandi Salah")
-            return null
-        }
-    }
-)
-
-export const fetchLogout = createAsyncThunk(
-    'user/fetchLogout',
-    async () => {
-        await AsyncStorage.removeItem('profileAsync');
+export const fetchLogin = createAsyncThunk('user/fetchLogin', async({
+    email,
+    password
+}, thunkAPI) => {
+    try {
+        const response = await axios.post('http://192.168.43.22:8000/api/authenticate', { email, password });
+        const data = response.data;
+    if (data.success) {
+        let profile =
+        {
+            email: data.user.email,
+            password: password,
+            id: data.user.id,
+            token: data.token,
+        };
+        await AsyncStorage.setItem('profileAsync', JSON.stringify(profile));
+        return profile
+    } else {
+        thunkAPI.dispatch(openModal({type: "Information", message: "Nama Pengguna / Sandi Salah"}))
         return null
     }
-)
+} catch (err) {
+    thunkAPI.dispatch(openModal({type: "Information", message: "Nama Pengguna / Sandi Salah"}))
+    // return thunkAPI.rejectWithValue("Nama Pengguna / Sandi Salah")
+    return null
+}
+})
+
+export const fetchLogAbsen = createAsyncThunk('user/fetchLogAbsen', async() =>  {
+  try {
+    const response = await axios.get(`http://192.168.43.22:8000/api/log_absen`);
+    const logAbsenData = response.data;
+    dispatch({ type: 'SET_LOG_ABSEN', payload: logAbsenData });
+} catch (err) {
+    dispatch(openModal({type: "Information", message: "Gagal Mengambil Data"}))
+    return null
+  } 
+})
+
+export const fetchLogout = createAsyncThunk('user/fetchLogout', async() => {
+await AsyncStorage.removeItem('profileAsync');
+return null
+})
