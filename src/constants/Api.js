@@ -1,6 +1,8 @@
 //digunakan untuk global API
 import { GlobalImages } from './Images'
 
+export const baseURL = "http://10.200.0.18:8000/"
+
 export const dataCarousel = [
     {
         image: GlobalImages.IMG1,

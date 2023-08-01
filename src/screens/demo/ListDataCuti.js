@@ -1,19 +1,18 @@
-import { StyleSheet, Text, View, ScrollView, FlatList, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, FlatList, TouchableOpacity, Alert } from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { ContainerView, ModalLoader } from '../../components';
+import { ContainerView, ModalForm, ModalLoader, InputText, ButtonText, InputDate } from '../../components';
 import { GlobalColors, GlobalFontSizes, kDefaultPadding } from '../../constants/Styles';
 import textStyles from '../../constants/TextStyles';
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchCuti } from '../../redux/actions/userAction';
-import { initialState } from '../../redux/reducers/userSlice';
+import { fetchCuti, postCuti } from '../../redux/actions/userAction';
 import moment from 'moment';
 
 
 const CutiList = ({ data, onPress }) => {
     return (
-        <TouchableOpacity style={styles.card} onPress={onPress}>
+            <TouchableOpacity style={styles.card} onPress={onPress}>
             <Text style={textStyles.textBold15}>{data.users_id} <Text style={{ ...textStyles.textBold12, color: GlobalColors.DANGER }}>({moment(data.tanggal_awal).format("dddd, DD MMMM YYYY")})</Text></Text>
             <View style={styles.viewData}>
                 <Text style={{ ...textStyles.textMd12, color: GlobalColors.INFO }}>({moment(data.tanggal_akhir).format("dddd, DD MMMM YYYY")})</Text>
@@ -23,25 +22,129 @@ const CutiList = ({ data, onPress }) => {
                     <Text style={{...textStyles.textBold13, marginLeft: 5}}>{data.status}</Text>
                 </View>
             </View>
-        </TouchableOpacity>
+        </TouchableOpacity>   
     )
 }
 
 export default function ListData() {
     const { isLoading, cutiData, dataProfile } = useSelector(state => state.user)
     const dispatch = useDispatch();
+    const [isModalVisible1, setIsModalVisible1] = useState(false);
+    const [isModalVisible2, setIsModalVisible2] = useState(false);
+    const [users_id, setUserId] = useState('');
+    const [tanggal_awal, setTanggalAwal] = useState(null);
+    const [tanggal_akhir, setTanggalAkhir] = useState(null);
+    const [jumlah_hari, setJumlahHari] = useState('');
+    const [deskripsi, setDeskripsi] = useState('');
+    const [selectedDate, setSelectedDate] = useState(null);
+
     
     useEffect(() => {
         dispatch(fetchCuti({idUser: dataProfile.id}));
     }, []);
 
+    const onPressPostCuti = () => {
+        dispatch(postCuti({ 
+            users_id : users_id, 
+            tanggal_awal : moment(tanggal_awal).format("YYYY-MM-DD"), 
+            tanggal_akhir : moment(tanggal_akhir).format("YYYY-MM-DD"), 
+            deskripsi : deskripsi }))
+            .then((response) => {
+                setIsModalVisible1(false);
+                if (response && response.error == false) {
+                  // Show a success message using Alert
+                  Alert.alert('Error', 'Failed to post data.');
+                } else {
+                  // Show an error message using Alert
+                  Alert.alert('Success', 'Data has been posted successfully!');
+                }
+              })
+              .catch((error) => {
+                setIsModalVisible1(true);
+                // Show an error message using Alert
+                Alert.alert('Error', 'An error occurred while posting data.');
+              });
+    };
+
     const _onPressList = (data) => {
-        console.warn(data.id + ' Has Selected')
+        setUserId(dataProfile.id.toString())
+        setTanggalAwal(data.tanggal_awal);
+        setTanggalAkhir(data.tanggal_akhir);
+        setJumlahHari(data.jumlah_hari);
+        setDeskripsi(data.deskripsi);
+        setIsModalVisible2(true);
     }
+
+    const handleOpenModal = () => {
+        setIsModalVisible1(true);
+        setUserId(dataProfile.id.toString())
+      };
+
 
     return (
         <ContainerView>
             <ModalLoader isLoading={isLoading}/>
+                <ButtonText
+                    style={styles.buttonText} 
+                    Color1={GlobalColors.RASTEKBIRU}
+                    Color2={GlobalColors.RASTEKUNGU}
+                    onPress={handleOpenModal}
+                >
+                Ajukan Cuti
+                </ButtonText>
+                <ModalForm
+                isVisible={isModalVisible2}
+                onCloseModal={() => setIsModalVisible2(false)}
+                modalTitle={"Detail Cuti"}
+                textButton={"CLOSE"}
+            >
+                <Text style={{...textStyles.textBold13,}}>User ID : {users_id}</Text>
+                <Text style={{...textStyles.textBold13,}}>Tanggal Awal : {tanggal_awal}</Text>
+                <Text style={{...textStyles.textBold13,}}>Tanggal Akhir : {tanggal_akhir}</Text>
+                <Text style={{...textStyles.textBold13,}}>Jumlah Hari : {jumlah_hari}</Text>
+                <Text style={{...textStyles.textBold13,}}>Status : {deskripsi}</Text>
+                </ModalForm>
+                <ModalForm 
+                isVisible={isModalVisible1} 
+                onCloseModal={() => setIsModalVisible1(false)}
+                modalTitle={"Pengajuan Cuti"}
+                onPressSubmit={onPressPostCuti}
+                >
+                <InputText 
+                    fullBorder
+                    title='ID USER'
+                    textInputConfig={{
+                        placeholder: 'Enter your user name',
+                        value: users_id,
+                        editable: false,
+                        onChangeText: (val) => setUserId(val), 
+                    }}
+                />
+                <InputDate
+                    title='TANGGAL AWAL'
+                    onDateChange={(date) => {
+                        setTanggalAwal(date)
+                        // setEndDate(null)
+                    }}
+                    value={tanggal_awal}
+                />
+                <InputDate
+                    title='TANGGAL AKHIR'
+                    onDateChange={(date) => {
+                        setTanggalAkhir(date)
+                        // setEndDate(null)
+                    }}
+                    value={tanggal_akhir}
+                />
+                <InputText 
+                    fullBorder
+                    title='DESKRIPSI'
+                    textInputConfig={{
+                        placeholder: 'Masukkan deskripsi',
+                        onChangeText: (val) => setDeskripsi(val), 
+                    }}
+                />
+            </ModalForm>
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: kDefaultPadding }}>
                 {cutiData.map((data, index) => {
                     return <CutiList key={'pp' + index} data={data} onPress={() => _onPressList(data)} />

@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { initLogin, fetchLogin, fetchLogout, generateCaptcha, fetchLogAbsen, fetchCuti, fetchLembur } from "../actions/userAction";
+import { initLogin, fetchLogin, fetchLogout, generateCaptcha, fetchLogAbsen, fetchCuti, fetchLembur, postCuti } from "../actions/userAction";
 
 export const initialState = {
     dataProfile: null,
@@ -69,7 +69,17 @@ export const userSlice = createSlice({
             state.isLoading = true;
         })
         builder.addCase(fetchLembur.fulfilled, (state, action) => {
-            state.lemburData = action.payload;
+            state.lemburData = action.payload
+            state.isLoading = false;
+        })
+        //postCuti
+        builder.addCase(postCuti.rejected, (state, action) => {
+            state.isLoading = false;
+        })
+        builder.addCase(postCuti.pending, (state, action) => {
+            state.isLoading = true;
+        })
+        builder.addCase(postCuti.fulfilled, (state, action) => {
             state.isLoading = false;
         })
         //fetchLogout

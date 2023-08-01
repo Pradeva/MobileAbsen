@@ -8,6 +8,14 @@ import { ROUTES } from '../navigations';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchLogout } from '../redux/actions/userAction';
 
+const handleLogout = async () => {
+    // Dispatch the logout action
+    await dispatch(fetchLogout());
+
+    // Navigate to the login page after logout
+    navigation.navigate(ROUTES.LOGIN);
+};
+
 export default function Home() {
     const navigation = useNavigation()
     const dispatch = useDispatch()

@@ -19,3 +19,4 @@ export { default as CheckBox } from './CheckBox';
 export { default as DropDown } from './DropDown';
 export { default as InputSelected } from './InputSelected';
 export { default as UnderConstruction } from './UnderConstruction';
+export { default as InputDate } from './InputDate';

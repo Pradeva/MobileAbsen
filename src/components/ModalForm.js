@@ -7,7 +7,7 @@ import textStyles from '../constants/TextStyles';
 import ButtonText from './ButtonText';
 
 const ModalForm = ({
-    showModal = false,
+    isVisible = false,
     buttonAction = true,
     children,
     modalTitle,
@@ -23,7 +23,7 @@ const ModalForm = ({
         <Modal
             transparent={true}
             animationType={'fade'}
-            visible={showModal}
+            visible={isVisible}
             onRequestClose={() => console.log("Modal Close")}
             statusBarTranslucent
         >

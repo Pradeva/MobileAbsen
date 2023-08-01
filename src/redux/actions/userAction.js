@@ -1,6 +1,7 @@
 import {createAsyncThunk} from "@reduxjs/toolkit";
 import {openModal} from "../reducers/alertSlice";
 import axios from 'axios';
+import {baseURL} from '../../constants/Api'
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const generateCaptcha = () => {
@@ -34,7 +35,7 @@ export const fetchLogin = createAsyncThunk('user/fetchLogin', async({
     password
 }, thunkAPI) => {
     try {
-        const response = await axios.post('http://10.200.0.18:8000/api/authenticate', { email, password });
+        const response = await axios.post(`${baseURL}api/authenticate`, { email, password });
         const data = response.data;
     if (data.success) {
         if (data.user.role_id != 1) {
@@ -82,7 +83,7 @@ export const fetchLogin = createAsyncThunk('user/fetchLogin', async({
 export const fetchLogAbsen = createAsyncThunk('user/fetchLogAbsen', async({idUser}, thunkAPI) => {
     try {
         console.log(idUser)
-        const response = await fetch(`http://10.200.0.18:8000/api/log_absen?users_id=${idUser}`, {
+        const response = await fetch(`${baseURL}api/log_absen?users_id=${idUser}`, {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json',
@@ -107,7 +108,7 @@ export const fetchLogAbsen = createAsyncThunk('user/fetchLogAbsen', async({idUse
 export const fetchCuti = createAsyncThunk('user/fetchCuti', async({idUser}, thunkAPI) => {
     try {
         console.log(idUser)
-        const response = await fetch(`http://10.200.0.18:8000/api/cuti?users_id=${idUser}`, {
+        const response = await fetch(`${baseURL}api/cuti?users_id=${idUser}`, {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json',
@@ -131,8 +132,7 @@ export const fetchCuti = createAsyncThunk('user/fetchCuti', async({idUser}, thun
 
 export const fetchLembur = createAsyncThunk('user/fetchLembur', async({idUser}, thunkAPI) => {
     try {
-        console.log(idUser)
-        const response = await fetch(`http://10.200.0.18:8000/api/lembur?users_id=${idUser}`, {
+        const response = await fetch(`${baseURL}api/lembur?users_id=${idUser}`, {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json',
@@ -152,6 +152,28 @@ export const fetchLembur = createAsyncThunk('user/fetchLembur', async({idUser}, 
         dispatch(openModal({type: "Information", message: "Gagal Mengambil Data"}))
         return []
     } 
+})
+
+export const postCuti = createAsyncThunk('user/postCuti', async({
+    users_id,
+    tanggal_awal,
+    tanggal_akhir,
+    deskripsi
+}, thunkAPI) => {
+    try {
+        const response = await axios.post(`${baseURL}api/cuti/create/store`, { users_id, tanggal_awal, tanggal_akhir, deskripsi });
+        const data = response.data;
+    if (data.error == false) {
+        thunkAPI.dispatch(openModal({type: "Information", message: "Sukses Menambah Data"}))
+    } else {
+        thunkAPI.dispatch(openModal({type: "Information", message: "Gagal Menambah Data"}))
+        return null
+    }
+} catch (err) {
+    thunkAPI.dispatch(openModal({type: "Information", message: "Gagal Menambah Data"}))
+    // return thunkAPI.rejectWithValue("Nama Pengguna / Sandi Salah")
+    return null
+}
 })
 
 export const fetchLogout = createAsyncThunk('user/fetchLogout', async() => {

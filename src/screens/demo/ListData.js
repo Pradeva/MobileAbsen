@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, ScrollView, FlatList, TouchableOpacity } from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { ContainerView, ModalLoader } from '../../components';
+import { ContainerView, ModalForm, ModalLoader } from '../../components';
 import { dataFilm } from '../../constants/Api';
 import { GlobalColors, GlobalFontSizes, kDefaultPadding } from '../../constants/Styles';
 import textStyles from '../../constants/TextStyles';
