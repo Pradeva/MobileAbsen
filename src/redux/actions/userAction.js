@@ -34,24 +34,38 @@ export const fetchLogin = createAsyncThunk('user/fetchLogin', async({
     password
 }, thunkAPI) => {
     try {
+<<<<<<< HEAD
         const response = await axios.post('http://192.168.43.22:8000/api/authenticate', { email, password });
+=======
+        const response = await axios.post('http://10.200.0.18:8000/api/authenticate', { email, password });
+>>>>>>> b502ef3f06da8c783edcffff6f5808e70d3ebd88
         const data = response.data;
     if (data.success) {
-        let profile =
+        if (data.user.role_id != 1) {
+            let profile =
         {
+            name : data.user.nama,
             email: data.user.email,
+            sisa_cuti : data.user.sisa_cuti,
+            jam_lebih : data.user.jam_lebih,
+            jam_kurang : data.user.jam_kurang,
+            jam_lembur : data.user.jam_lembur,
             password: password,
             id: data.user.id,
             token: data.token,
         };
         await AsyncStorage.setItem('profileAsync', JSON.stringify(profile));
         return profile
+        } else {
+            thunkAPI.dispatch(openModal({type: "Information", message: "Admin Tidak Boleh Memasuki Aplikasi"}))
+        return null    
+        }
     } else {
         thunkAPI.dispatch(openModal({type: "Information", message: "Nama Pengguna / Sandi Salah"}))
         return null
     }
 } catch (err) {
-    thunkAPI.dispatch(openModal({type: "Information", message: "Nama Pengguna / Sandi Salah"}))
+    thunkAPI.dispatch(openModal({type: "Information", message: "Admin Tidak Boleh Memasuki"}))
     // return thunkAPI.rejectWithValue("Nama Pengguna / Sandi Salah")
     return null
 }
@@ -72,7 +86,57 @@ export const fetchLogin = createAsyncThunk('user/fetchLogin', async({
 export const fetchLogAbsen = createAsyncThunk('user/fetchLogAbsen', async({idUser}, thunkAPI) => {
     try {
         console.log(idUser)
-        const response = await fetch(`http://192.168.43.22:8000/api/log_absen?users_id=${idUser}`, {
+        const response = await fetch(`http://10.200.0.18:8000/api/log_absen?users_id=${idUser}`, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                // "Authorization": "Bearer " + token,
+            }
+        });
+        if (response.status === 200) {
+            const responseJson = await response.json();
+            const dataResponse = responseJson.list
+            return dataResponse
+        }
+        else{
+            dispatch(openModal({type: "Information", message: "Gagal Mengambil Data"}))
+            return []
+        }
+    } catch (err) {
+        dispatch(openModal({type: "Information", message: "Gagal Mengambil Data"}))
+        return []
+    } 
+})
+
+export const fetchCuti = createAsyncThunk('user/fetchCuti', async({idUser}, thunkAPI) => {
+    try {
+        console.log(idUser)
+        const response = await fetch(`http://192.168.43.22:8000/api/cuti?users_id=${idUser}`, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                // "Authorization": "Bearer " + token,
+            }
+        });
+        if (response.status === 200) {
+            const responseJson = await response.json();
+            const dataResponse = responseJson.list
+            return dataResponse
+        }
+        else{
+            dispatch(openModal({type: "Information", message: "Gagal Mengambil Data"}))
+            return []
+        }
+    } catch (err) {
+        dispatch(openModal({type: "Information", message: "Gagal Mengambil Data"}))
+        return []
+    } 
+})
+
+export const fetchLembur = createAsyncThunk('user/fetchLembur', async({idUser}, thunkAPI) => {
+    try {
+        console.log(idUser)
+        const response = await fetch(`http://192.168.43.22:8000/api/lembur?users_id=${idUser}`, {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json',
@@ -95,6 +159,7 @@ export const fetchLogAbsen = createAsyncThunk('user/fetchLogAbsen', async({idUse
 })
 
 export const fetchLogout = createAsyncThunk('user/fetchLogout', async() => {
-await AsyncStorage.removeItem('profileAsync');
-return null
+    await AsyncStorage.removeItem('profileAsync');
+    return null
+
 })
