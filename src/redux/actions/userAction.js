@@ -34,7 +34,7 @@ export const fetchLogin = createAsyncThunk('user/fetchLogin', async({
     password
 }, thunkAPI) => {
     try {
-        const response = await axios.post('http://172.20.10.3:8000/api/authenticate', { email, password });
+        const response = await axios.post('http://192.168.43.22:8000/api/authenticate', { email, password });
         const data = response.data;
     if (data.success) {
         let profile =
@@ -72,7 +72,7 @@ export const fetchLogin = createAsyncThunk('user/fetchLogin', async({
 export const fetchLogAbsen = createAsyncThunk('user/fetchLogAbsen', async({idUser}, thunkAPI) => {
     try {
         console.log(idUser)
-        const response = await fetch(`http://172.20.10.3:8000/api/log_absen?users_id=${idUser}`, {
+        const response = await fetch(`http://192.168.43.22:8000/api/log_absen?users_id=${idUser}`, {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json',
@@ -83,7 +83,7 @@ export const fetchLogAbsen = createAsyncThunk('user/fetchLogAbsen', async({idUse
             const responseJson = await response.json();
             const dataResponse = responseJson.list
             return dataResponse
-        }
+        }
         else{
             dispatch(openModal({type: "Information", message: "Gagal Mengambil Data"}))
             return []
