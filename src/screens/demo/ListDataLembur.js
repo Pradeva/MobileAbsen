@@ -29,6 +29,8 @@ const LemburList = ({ data, onPress }) => {
     )
 }
 
+
+
 export default function ListData() {
     const { isLoading, lemburData, dataProfile } = useSelector(state => state.user)
     const dispatch = useDispatch();
@@ -47,6 +49,18 @@ export default function ListData() {
     const [isJamAwalValid, setIsJamAwalValid] = useState(true);
     const [isJamAkhirValid, setIsJamAkhirValid] = useState(true);
     const [isStatusKerjaValid, setIsStatusKerjaValid] = useState(true);
+
+    const groupDataByMonth = (data) => {
+        const groupedData = {};
+        data.forEach((item) => {
+          const month = moment(item.tanggal).format('MMMM YYYY');
+          if (!groupedData[month]) {
+            groupedData[month] = [];
+          }
+          groupedData[month].push(item);
+        });
+        return groupedData;
+      };
 
     useEffect(() => {
         dispatch(fetchLembur({idUser: dataProfile.id}));
@@ -128,6 +142,8 @@ export default function ListData() {
         }
         return true;
     };
+
+    const groupedData = groupDataByMonth(lemburData);
 
 
     return (
@@ -248,9 +264,14 @@ export default function ListData() {
                 />
             </ModalForm>
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: kDefaultPadding }}>
-                {lemburData.map((data, index) => {
-                    return <LemburList key={'pp' + index} data={data} onPress={() => _onPressList(data)} />
-                })}
+            {Object.keys(groupedData).map((month) => (
+          <View key={month}>
+            <Text style={styles.monthHeader}>{month}</Text>
+            {groupedData[month].map((data, index) => (
+              <LemburList key={`list_${month}_${index}`} data={data} onPress={() => _onPressList(data)} />
+            ))}
+          </View>
+        ))}
             </ScrollView>
         </ContainerView>
     )

@@ -41,6 +41,20 @@ export default function ListData() {
     const [isTanggalAkhirValid, setIsTanggalAkhirValid] = useState(true);
     const [isDeskripsiValid, setIsDeskripsiValid] = useState(true);
 
+    const groupDataByMonth = (data) => {
+        const groupedData = {};
+        data.forEach((item) => {
+          const month = moment(item.tanggal_awal).format('MMMM YYYY');
+          if (!groupedData[month]) {
+            groupedData[month] = [];
+          }
+          groupedData[month].push(item);
+        });
+        return groupedData;
+      };
+
+      const groupedData = groupDataByMonth(cutiData);
+
     
     useEffect(() => {
         dispatch(fetchCuti({idUser: dataProfile.id}));
@@ -183,9 +197,14 @@ export default function ListData() {
                 {!isDeskripsiValid && <Text style={{ color: 'red' }}>DESKRIPSI cannot be empty.</Text>}
             </ModalForm>
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: kDefaultPadding }}>
-                {cutiData.map((data, index) => {
-                    return <CutiList key={'pp' + index} data={data} onPress={() => _onPressList(data)} />
-                })}
+            {Object.keys(groupedData).map((month) => (
+            <View key={month}>
+            <Text style={styles.monthHeader}>{month}</Text>
+            {groupedData[month].map((data, index) => (
+              <CutiList key={`list_${month}_${index}`} data={data} onPress={() => _onPressList(data)} />
+            ))}
+          </View>
+        ))}
             </ScrollView>
         </ContainerView>
     )
