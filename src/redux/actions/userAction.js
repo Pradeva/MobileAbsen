@@ -34,11 +34,7 @@ export const fetchLogin = createAsyncThunk('user/fetchLogin', async({
     password
 }, thunkAPI) => {
     try {
-<<<<<<< HEAD
         const response = await axios.post('http://192.168.43.22:8000/api/authenticate', { email, password });
-=======
-        const response = await axios.post('http://10.200.0.18:8000/api/authenticate', { email, password });
->>>>>>> b502ef3f06da8c783edcffff6f5808e70d3ebd88
         const data = response.data;
     if (data.success) {
         if (data.user.role_id != 1) {
@@ -86,7 +82,7 @@ export const fetchLogin = createAsyncThunk('user/fetchLogin', async({
 export const fetchLogAbsen = createAsyncThunk('user/fetchLogAbsen', async({idUser}, thunkAPI) => {
     try {
         console.log(idUser)
-        const response = await fetch(`http://10.200.0.18:8000/api/log_absen?users_id=${idUser}`, {
+        const response = await fetch(`http://192.168.43.22:8000/api/log_absen?users_id=${idUser}`, {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json',
@@ -122,7 +118,7 @@ export const fetchCuti = createAsyncThunk('user/fetchCuti', async({idUser}, thun
             const responseJson = await response.json();
             const dataResponse = responseJson.list
             return dataResponse
-        }
+        }
         else{
             dispatch(openModal({type: "Information", message: "Gagal Mengambil Data"}))
             return []

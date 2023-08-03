@@ -10,6 +10,7 @@ export const GlobalFont = {
         'mdItalic': 'Gotham-Medium-Italic',
         'bold': 'Gotham-Black'
     }
+
 }
 export const kDefaultPadding = 20
 export const GlobalColors = {

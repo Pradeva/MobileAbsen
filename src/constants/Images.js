@@ -1,6 +1,6 @@
 export const GlobalImages = {
     LG_TELPRO: require("../../assets/images/Logo_Telpro.png"),
-    IMG_ACCOUNTDEFAULT: require("../../assets/images/account1.jpg"),
+    IMG_ACCOUNTDEFAULT: require("../../assets/images/user(2).png"),
     BG_CAPTCHA: require("../../assets/images/captcha_background.png"),
     BG_HEAD_MODAL: require("../../assets/images/bg_header_modal.png"),
     IMG1: require("../../assets/images/image1.jpg"),
@@ -10,4 +10,7 @@ export const GlobalImages = {
     IMG5: require("../../assets/images/image5.jpg"),
     IMGLOGO: require("../../assets/images/rastek-removebg-preview.png"),
     IMG_UNDERCONSTRUCTION: require("../../assets/images/under_construction.png"),
+    IMGABSEN: require("../../assets/images/absentism.png"),
+    IMGCUTI: require("../../assets/images/sunbed.png"),
+    IMGLEMBUR: require("../../assets/images/overwork.png"),
 }

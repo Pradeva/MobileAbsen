@@ -7,23 +7,24 @@ import { GlobalColors, GlobalFont } from '../constants/Styles';
 export default function ProfileImage({ size }) {
     const sizeBadge = size / 3
     return (
-        <View style={{ width: size, height: size }}>
+        <View style={[styles.container, { width: size, height: size }]}>
             <Image
                 style={{
                     width: size,
                     height: size,
                     borderRadius: size / 2,
                     borderWidth: size <= 35 ? 1 : 3,
-                    borderColor: "#ffffff"
+                    borderColor: "#35022D",
+                    overflow:'hidden'
                 }}
                 source={GlobalImages.IMG_ACCOUNTDEFAULT}
             />
-            <GradientView
+            {/* <GradientView
                 style={[styles.container, { width: sizeBadge, height: sizeBadge, borderRadius: sizeBadge / 2 }]}
                 colors={[GlobalColors.DANGER, GlobalColors.BUTTON_PRIMARY]}
             >
                 <Text style={[styles.text, { fontSize: sizeBadge - 8 }]}>m</Text>
-            </GradientView>
+            </GradientView> */}
         </View>
     )
 }
@@ -31,10 +32,10 @@ export default function ProfileImage({ size }) {
 const styles = StyleSheet.create({
     container: {
         position: 'absolute',
-        bottom: 0,
-        right: 0,
+        top: 20,
+        left: 20,
         borderColor: 'white',
-        borderWidth: 1,
+        borderWidth: 0,
         alignItems: 'center',
         justifyContent: 'center'
     },

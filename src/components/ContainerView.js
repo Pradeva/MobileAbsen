@@ -4,7 +4,7 @@ import { GlobalColors } from '../constants/Styles';
 
 export default function ContainerView({ children, style }) {
     return (
-        <View style={[style, { flex: 1, backgroundColor: "#FEF8F6" }]}>
+        <View style={[style, { flex: 1, backgroundColor: "#FFFFFF" }]}>
             {children}
         </View>
     )
