@@ -1,40 +1,179 @@
-import { StyleSheet, StatusBar, ScrollView, Text } from 'react-native';
+import { View, StyleSheet, StatusBar, ScrollView, Text, Image } from 'react-native';
 import React, { useEffect } from 'react';
-import { ButtonText, ContainerView, ModalLoader } from '../components';
+import { ButtonText, ContainerView, ModalLoader, ProfileImage } from '../components';
+import ButtonImage from '../components/ButtonImage';
 //Navigation
 import { useNavigation } from '@react-navigation/native';
 import { ROUTES } from '../navigations';
 //Redux
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchLogout } from '../redux/actions/userAction';
+import { GlobalWidths, GlobalHeights, GlobalColors } from '../constants/Styles';
+import LinearGradient from 'react-native-linear-gradient'; // Import LinearGradient
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { style } from 'deprecated-react-native-prop-types/DeprecatedImagePropType';
+import { color } from 'react-native-reanimated';
+import { initialState } from '../redux/reducers/userSlice';
 
-const handleLogout = async () => {
-    // Dispatch the logout action
-    await dispatch(fetchLogout());
-
-    // Navigate to the login page after logout
-    navigation.navigate(ROUTES.LOGIN);
-};
+import { GlobalImages } from '../constants/Images';
 
 export default function Home() {
     const navigation = useNavigation()
     const dispatch = useDispatch()
+
+    const handleLogout = async () => {
+        // Dispatch the logout action
+        await dispatch(fetchLogout());
+
+        // Navigate to the login page after logout
+        navigation.navigate(ROUTES.LOGIN);
+    };
+    const { dataProfile, logAbsenData } = useSelector(state => state.user)
+    console.log(logAbsenData)
+
     return (
-        <ContainerView>
-            <ScrollView contentContainerStyle={{ paddingBottom: 80 }} showsVerticalScrollIndicator={false}>
-                <StatusBar hidden={true} />
-                <ButtonText onPress={() => navigation.navigate(ROUTES.DASHBOARD_HEADER)}>Dashboard Header</ButtonText>
-                <ButtonText onPress={() => navigation.navigate(ROUTES.BLUETOOTH)}>Bluetooth BLE</ButtonText>
-                <ButtonText onPress={() => navigation.navigate(ROUTES.CAROUSEL)}>Carousel</ButtonText>
-                <ButtonText onPress={() => navigation.navigate(ROUTES.MQTT)}>MQTT</ButtonText>
-                <ButtonText onPress={() => navigation.navigate(ROUTES.DEMOLISTVIEW)}>List View Data Presensi</ButtonText>
-                <ButtonText onPress={() => navigation.navigate(ROUTES.CUTI)}>List View Data Cuti</ButtonText>
-                <ButtonText onPress={() => navigation.navigate(ROUTES.LEMBUR)}>List View Data Lembur</ButtonText>
-                <ButtonText onPress={() => dispatch(fetchLogout())}>SIGN OUT</ButtonText>
-            </ScrollView>
-        </ContainerView>
+        <LinearGradient colors={['#90B7FF', '#F79FFF']} start={{ x: 0, y: 0.5 }}
+        end={{ x: 1, y: 0.5 }} style={styles.containerContent}>
+            <Text style={[styles.TextSyle, {marginTop:20}, {fontSize:14}, {color:'#35022D'} ]}>Welcome,</Text>
+            <Text style={[styles.TextSyle, {fontSize:32},{color:'#35022D'} ]}>{dataProfile.name}</Text>
+            <ProfileImage  size={40}></ProfileImage>
+
+
+
+            {/* <LinearGradient  colors={['white', 'white']} style={styles.container}> */}
+            
+            <LinearGradient colors={[GlobalColors.RASTEKBIRU, GlobalColors.RASTEKUNGU]} 
+                start={{ x: 0, y: 0 }} 
+                end={{ x: 1, y: 0 }} 
+                style={[styles.box]}>
+                    <Text style={[styles.textStyle, {marginTop: '20%'},{marginLeft: 30}]}>Menu</Text>
+                    <View style={[styles.gridContainer]}>
+                        <View style={[styles.gridContainer, {flexDirection:'column'}]}>
+                            <ButtonImage children={GlobalImages.IMGABSEN} 
+                                Color1='#90B7FF' 
+                                Color2='#F79FFF' 
+                                styleButton={styles.boxSize} 
+                                onPress={() => navigation.navigate(ROUTES.DEMOLISTVIEW)}>
+                            </ButtonImage>
+                            <Text style={[{color:'white'}, {fontWeight:'bold'}]}>Presensi</Text>
+                        </View>
+                        <View style={[styles.gridContainer, {flexDirection:'column'}]}>
+                            {/* <ButtonText styleButton={styles.boxSize} onPress={() => navigation.navigate(ROUTES.CUTI)}>List View Data Cuti</ButtonText> */}
+                            <ButtonImage children={GlobalImages.IMGCUTI} 
+                                Color1='#90B7FF' 
+                                Color2='#F79FFF' 
+                                styleButton={styles.boxSize} 
+                                onPress={() => navigation.navigate(ROUTES.CUTI)}>
+                            </ButtonImage>
+                            <Text style={[{color:'white'}, {fontWeight:'bold'}]}>Cuti</Text>
+
+                        </View>
+                    </View>
+                    <View style={styles.gridContainer}>
+                        <View style={[styles.gridContainer, {flexDirection:'column'}]}>
+                        <ButtonImage children={GlobalImages.IMGLEMBUR} 
+                                Color1='#90B7FF' 
+                                Color2='#F79FFF' 
+                                styleButton={styles.boxSize} 
+                                onPress={() => navigation.navigate(ROUTES.LEMBUR)}>
+                            </ButtonImage>                            
+                            <Text style={[{color:'white'}, {fontWeight:'bold'}]}>Lembur</Text>
+
+                        </View>
+                        {/* <View style={[styles.gridContainer, {flexDirection:'column'}]}>
+
+                        <ButtonText styleButton={styles.boxSize} onPress={handleLogout}>SIGN OUT</ButtonText>
+                        </View> */}
+                    </View>
+            </LinearGradient>
+            <View style={styles.overlay}>
+                <View style={[{width: GlobalWidths[70]}, {height: GlobalHeights[15], flex: 1, justifyContent: 'center'}]}>
+                    <Text style={[{color:'black', fontSize:14, fontWeight:'bold', alignSelf:'center', marginBottom:20}]}> DATA ABSEN TERAKHIR</Text>
+
+                    <View style={{flexDirection: 'row', flexWrap: 'wrap', marginBottom:10, paddingLeft:10}}>
+                        <Text style={[{color:'black', fontSize:14, fontWeight:'bold', width:100}]}> Tanggal</Text>
+                        <Text style={[{color:'black', fontSize:14, fontWeight:'bold'}]}> : {logAbsenData[0]?.tanggal}</Text>
+                    </View>
+                    <View style={{flexDirection: 'row', flexWrap: 'wrap', marginBottom:10, paddingLeft:10}}>
+                        <Text style={[{color:'black', fontSize:14, fontWeight:'bold', width:100}]}> Jam Masuk</Text>
+                        <Text style={[{color:'black', fontSize:14, fontWeight:'bold'}]}> : {logAbsenData[0]?.jam_masuk}</Text>
+                    </View>
+                    <View style={{flexDirection: 'row', flexWrap: 'wrap', paddingLeft:10}}>
+                        <Text style={[{color:'black', fontSize:14, fontWeight:'bold', width:100}]}> Jam Keluar</Text>
+                        <Text style={[{color:'black', fontSize:14, fontWeight:'bold'}]}> : {logAbsenData[0]?.jam_keluar}</Text>
+                    </View>
+                </View>
+            </View>
+
+            {/* </LinearGradient> */}
+        </LinearGradient>
     )
 }
 
 const styles = StyleSheet.create({
+    overlay: {
+        width: GlobalWidths[80],
+        height: GlobalHeights[25],
+        borderRadius:GlobalWidths[10],
+        backgroundColor: 'rgba(255, 255, 255, 1)', // Warna semitransparan untuk efek overlay
+        position: 'absolute', // Menggunakan position: 'absolute' untuk mengatur posisi di atas
+        bottom:0,
+        marginBottom: GlobalHeights[55],
+        alignItems: 'center'
+      },
+    containerContent: {
+        // flex:1,
+        alignItems:'center',
+        width: GlobalWidths[100],
+        height: GlobalHeights[100],
+    },
+    TextSyle: {
+        color:'white',
+        fontSize:16,
+        fontWeight:'bold'
+    },
+    textStyle: {
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 20,
+    },
+    container: {
+        flex: 1,
+        backgroundColor:'white',
+        justifyContent: 'flex-end', // Mengatur konten di bagian bawah container
+      },
+    box: {
+        width: GlobalWidths[100] ,
+        height: GlobalHeights[60],
+        borderTopRightRadius: GlobalWidths[10],
+        borderTopLeftRadius: GlobalWidths[10],
+        // justifyContent: 'center',
+        // alignItems: 'center',
+        bottom:0,
+        position: 'absolute',
+      },
+    text: {
+        color: 'white',
+        fontSize: 18,
+        fontWeight: 'bold',
+      },
+    gridContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'center', // Atur posisi horizontal tombol di tengah
+        alignItems: 'center', // Atur posisi vertikal tombol di tengah
+        // padding: 10, // Jarak antara tombol
+      },
+    boxSize: {
+        alignItems: 'center',
+        width:GlobalHeights[15],
+        height: GlobalHeights[15],
+    },
+    
+      icon: {
+        width:GlobalHeights[10],
+        height: GlobalHeights[10],
+        
+        // resizeMode: 'contain', // You can adjust the image's resize mode
+      },
 })

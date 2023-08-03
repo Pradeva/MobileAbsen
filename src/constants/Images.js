@@ -8,6 +8,9 @@ export const GlobalImages = {
     IMG3: require("../../assets/images/image3.jpg"),
     IMG4: require("../../assets/images/image4.jpg"),
     IMG5: require("../../assets/images/image5.jpg"),
+    IMGCUTI: require("../../assets/images/sunbed.png"),
+    IMGABSEN: require("../../assets/images/absentism.png"),
+    IMGLEMBUR: require("../../assets/images/overwork.png"),
     IMGLOGO: require("../../assets/images/rastek-removebg-preview.png"),
     IMG_UNDERCONSTRUCTION: require("../../assets/images/under_construction.png"),
 }

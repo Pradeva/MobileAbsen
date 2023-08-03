@@ -176,6 +176,29 @@ export const postCuti = createAsyncThunk('user/postCuti', async({
 }
 })
 
+export const postLembur = createAsyncThunk('user/postLembur', async({
+    users_id,
+    tanggal,
+    jam_awal,
+    jam_akhir,
+    status_kerja
+}, thunkAPI) => {
+    try {
+        const response = await axios.post(`${baseURL}api/lembur/create/store`, { users_id, tanggal, jam_awal, jam_akhir, status_kerja });
+        const data = response.data;
+    if (data.error == false) {
+        thunkAPI.dispatch(openModal({type: "Information", message: "Sukses Menambah Data"}))
+    } else {
+        thunkAPI.dispatch(openModal({type: "Information", message: "Gagal Menambah Data"}))
+        return null
+    }
+} catch (err) {
+    thunkAPI.dispatch(openModal({type: "Information", message: "Gagal Menambah Data"}))
+    // return thunkAPI.rejectWithValue("Nama Pengguna / Sandi Salah")
+    return null
+}
+})
+
 export const fetchLogout = createAsyncThunk('user/fetchLogout', async() => {
     await AsyncStorage.removeItem('profileAsync');
     return null

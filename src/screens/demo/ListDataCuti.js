@@ -37,6 +37,9 @@ export default function ListData() {
     const [jumlah_hari, setJumlahHari] = useState('');
     const [deskripsi, setDeskripsi] = useState('');
     const [selectedDate, setSelectedDate] = useState(null);
+    const [isTanggalAwalValid, setIsTanggalAwalValid] = useState(true);
+    const [isTanggalAkhirValid, setIsTanggalAkhirValid] = useState(true);
+    const [isDeskripsiValid, setIsDeskripsiValid] = useState(true);
 
     
     useEffect(() => {
@@ -44,6 +47,12 @@ export default function ListData() {
     }, []);
 
     const onPressPostCuti = () => {
+        validateInputs();
+        if (!isInputValid()) {
+            // Show a message indicating that some fields are empty
+            Alert.alert('Error', 'Please fill in all the required fields.');
+            return;
+        }
         dispatch(postCuti({ 
             users_id : users_id, 
             tanggal_awal : moment(tanggal_awal).format("YYYY-MM-DD"), 
@@ -57,6 +66,9 @@ export default function ListData() {
                 } else {
                   // Show an error message using Alert
                   Alert.alert('Success', 'Data has been posted successfully!');
+                  setTanggalAwal(null);
+                  setTanggalAkhir(null);
+                  setDeskripsi('');
                 }
               })
               .catch((error) => {
@@ -65,6 +77,24 @@ export default function ListData() {
                 Alert.alert('Error', 'An error occurred while posting data.');
               });
     };
+
+    const isInputValid = () => {
+        if (
+          users_id.trim() === '' ||
+          tanggal_awal === null ||
+          tanggal_akhir === null ||
+          deskripsi.trim() === '' 
+        ) {
+          return false;
+        }
+        return true;
+    };
+
+    const validateInputs = () => {
+        setIsTanggalAwalValid(tanggal_awal !== null);
+        setIsTanggalAkhirValid(tanggal_akhir !== null);
+        setIsDeskripsiValid(deskripsi !== '');
+      };
 
     const _onPressList = (data) => {
         setUserId(dataProfile.id.toString())
@@ -97,6 +127,7 @@ export default function ListData() {
                 onCloseModal={() => setIsModalVisible2(false)}
                 modalTitle={"Detail Cuti"}
                 textButton={"CLOSE"}
+                onPressSubmit={() => setIsModalVisible2(false)}
             >
                 <Text style={{...textStyles.textBold13,}}>User ID : {users_id}</Text>
                 <Text style={{...textStyles.textBold13,}}>Tanggal Awal : {tanggal_awal}</Text>
@@ -127,7 +158,9 @@ export default function ListData() {
                         // setEndDate(null)
                     }}
                     value={tanggal_awal}
+                    style={! isTanggalAwalValid? { borderColor: 'red' } : null}
                 />
+                {!isTanggalAwalValid && <Text style={{ color: 'red' }}>TANGGAL AWAL cannot be empty.</Text>}
                 <InputDate
                     title='TANGGAL AKHIR'
                     onDateChange={(date) => {
@@ -135,15 +168,19 @@ export default function ListData() {
                         // setEndDate(null)
                     }}
                     value={tanggal_akhir}
+                    style={! isTanggalAkhirValid? { borderColor: 'red' } : null}
                 />
+                {!isTanggalAkhirValid && <Text style={{ color: 'red' }}>TANGGAL AKHIR cannot be empty.</Text>}
                 <InputText 
                     fullBorder
                     title='DESKRIPSI'
                     textInputConfig={{
                         placeholder: 'Masukkan deskripsi',
                         onChangeText: (val) => setDeskripsi(val), 
+                        style: !isDeskripsiValid ? { borderColor: 'red' } : null,
                     }}
                 />
+                {!isDeskripsiValid && <Text style={{ color: 'red' }}>DESKRIPSI cannot be empty.</Text>}
             </ModalForm>
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: kDefaultPadding }}>
                 {cutiData.map((data, index) => {

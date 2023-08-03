@@ -20,3 +20,4 @@ export { default as DropDown } from './DropDown';
 export { default as InputSelected } from './InputSelected';
 export { default as UnderConstruction } from './UnderConstruction';
 export { default as InputDate } from './InputDate';
+export { default as RadioButton} from './RadioButton';
