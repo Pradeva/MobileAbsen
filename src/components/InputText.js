@@ -3,6 +3,7 @@ import React from 'react';
 import { GlobalFontSizes, GlobalColors, kDefaultPadding } from '../constants/Styles';
 import Icon from 'react-native-vector-icons/Ionicons';
 import textStyles from '../constants/TextStyles';
+import { color } from 'react-native-reanimated';
 
 export default function InputText({
     fullBorder = false,

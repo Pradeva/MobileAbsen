@@ -1,5 +1,5 @@
 import { View, StyleSheet, StatusBar, ScrollView, Text, Image } from 'react-native';
-import React, { useEffect } from 'react';
+import React, { useState } from 'react';
 import { ButtonText, ContainerView, ModalLoader, ProfileImage } from '../components';
 import ButtonImage from '../components/ButtonImage';
 //Navigation
@@ -24,34 +24,46 @@ export default function Home() {
     const handleLogout = async () => {
         // Dispatch the logout action
         await dispatch(fetchLogout());
-
+        
         // Navigate to the login page after logout
         navigation.navigate(ROUTES.LOGIN);
     };
     const { dataProfile, logAbsenData } = useSelector(state => state.user)
-    console.log(logAbsenData)
+    console.log(dataProfile)
+
+    const [shadowOffsetWidth, setShadowOffsetWidth] = useState(0);
+    const [shadowOffsetHeight, setShadowOffsetHeight] = useState(0);
+    const [shadowRadius, setShadowRadius] = useState(0);
+    const [shadowOpacity, setShadowOpacity] = useState(0.1);
+  
 
     return (
-        <LinearGradient colors={['#90B7FF', '#F79FFF']} start={{ x: 0, y: 0.5 }}
+        <LinearGradient colors={['#EAEAEA', '#EAEAEA']} start={{ x: 0, y: 0.5 }}
         end={{ x: 1, y: 0.5 }} style={styles.containerContent}>
             <Text style={[styles.TextSyle, {marginTop:20}, {fontSize:14}, {color:'#35022D'} ]}>Welcome,</Text>
             <Text style={[styles.TextSyle, {fontSize:32},{color:'#35022D'} ]}>{dataProfile.name}</Text>
-            <ProfileImage  size={40}></ProfileImage>
+            <ButtonImage
+                children={GlobalImages.IMG_ACCOUNTDEFAULT}
+                onPress={() => navigation.navigate(ROUTES.PROFILE)}
+            >
+            </ButtonImage>
+            
 
 
 
             {/* <LinearGradient  colors={['white', 'white']} style={styles.container}> */}
             
-            <LinearGradient colors={[GlobalColors.RASTEKBIRU, GlobalColors.RASTEKUNGU]} 
+            {/* <LinearGradient colors={[GlobalColors.RASTEKBIRU, GlobalColors.RASTEKUNGU]} 
                 start={{ x: 0, y: 0 }} 
                 end={{ x: 1, y: 0 }} 
-                style={[styles.box]}>
+                style={[styles.box]}> */}
+            <View style={[styles.box, {backgroundColor: '#1C305E'}]}>
                     <Text style={[styles.textStyle, {marginTop: '20%'},{marginLeft: 30}]}>Menu</Text>
                     <View style={[styles.gridContainer]}>
                         <View style={[styles.gridContainer, {flexDirection:'column'}]}>
                             <ButtonImage children={GlobalImages.IMGABSEN} 
-                                Color1='#90B7FF' 
-                                Color2='#F79FFF' 
+                                Color1='#EAEAEA' 
+                                Color2='#EAEAEA' 
                                 styleButton={styles.boxSize} 
                                 onPress={() => navigation.navigate(ROUTES.DEMOLISTVIEW)}>
                             </ButtonImage>
@@ -60,8 +72,8 @@ export default function Home() {
                         <View style={[styles.gridContainer, {flexDirection:'column'}]}>
                             {/* <ButtonText styleButton={styles.boxSize} onPress={() => navigation.navigate(ROUTES.CUTI)}>List View Data Cuti</ButtonText> */}
                             <ButtonImage children={GlobalImages.IMGCUTI} 
-                                Color1='#90B7FF' 
-                                Color2='#F79FFF' 
+                                Color1='#EAEAEA' 
+                                Color2='#EAEAEA' 
                                 styleButton={styles.boxSize} 
                                 onPress={() => navigation.navigate(ROUTES.CUTI)}>
                             </ButtonImage>
@@ -72,8 +84,8 @@ export default function Home() {
                     <View style={styles.gridContainer}>
                         <View style={[styles.gridContainer, {flexDirection:'column'}]}>
                         <ButtonImage children={GlobalImages.IMGLEMBUR} 
-                                Color1='#90B7FF' 
-                                Color2='#F79FFF' 
+                                Color1='#EAEAEA' 
+                                Color2='#EAEAEA' 
                                 styleButton={styles.boxSize} 
                                 onPress={() => navigation.navigate(ROUTES.LEMBUR)}>
                             </ButtonImage>                            
@@ -85,8 +97,14 @@ export default function Home() {
                         <ButtonText styleButton={styles.boxSize} onPress={handleLogout}>SIGN OUT</ButtonText>
                         </View> */}
                     </View>
-            </LinearGradient>
-            <View style={styles.overlay}>
+            </View>
+            {/* </LinearGradient> */}
+            <View style={[styles.overlay, {shadowOffset: {
+            width: shadowOffsetWidth,
+            height: -shadowOffsetHeight,
+          },
+          shadowOpacity,
+          shadowRadius,}]}>
                 <View style={[{width: GlobalWidths[70]}, {height: GlobalHeights[15], flex: 1, justifyContent: 'center'}]}>
                     <Text style={[{color:'black', fontSize:14, fontWeight:'bold', alignSelf:'center', marginBottom:20}]}> DATA ABSEN TERAKHIR</Text>
 
@@ -106,6 +124,15 @@ export default function Home() {
             </View>
 
             {/* </LinearGradient> */}
+            <ButtonImage children={GlobalImages.IMGLOGOUT} 
+                                Color1='#EAEAEA' 
+                                Color2='#EAEAEA' 
+                                styleButton={[styles.boxSize, {height:25, width:25, position: 'absolute',
+                                top: 20,
+                                right: 20,}]} 
+                                imageSize={{height:25, width:25}}
+                                onPress={handleLogout}>
+                            </ButtonImage>      
         </LinearGradient>
     )
 }
@@ -119,7 +146,9 @@ const styles = StyleSheet.create({
         position: 'absolute', // Menggunakan position: 'absolute' untuk mengatur posisi di atas
         bottom:0,
         marginBottom: GlobalHeights[55],
-        alignItems: 'center'
+        alignItems: 'center',
+        shadowColor: 'black',
+        
       },
     containerContent: {
         // flex:1,
@@ -151,6 +180,13 @@ const styles = StyleSheet.create({
         // alignItems: 'center',
         bottom:0,
         position: 'absolute',
+        shadowColor: '#000',
+  shadowOffset: {
+    width: 0,
+    height: 5, // Ubah nilai ini sesuai dengan kebutuhan
+  },
+  shadowOpacity: 0.25,
+  shadowRadius: 3.84,
       },
     text: {
         color: 'white',

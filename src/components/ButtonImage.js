@@ -12,6 +12,7 @@ export default function ButtonImage({
     Color2 = GlobalColors.BUTTON_SECONDARY,
     textColor = GlobalColors.LIGHT,
     styleButton,
+    imageSize = { height: 100, width: 100 },
     textStyle = textStyles.textBold16
 }) {
     return (
@@ -25,7 +26,7 @@ export default function ButtonImage({
             start={{ x: 0, y: 0.5 }}
         >
             <TouchableOpacity style={styles.buttonInnerContainer} onPress={onPress}>
-                <Image source={children} style={styles.imageSize}/>
+                <Image source={children} style={[ imageSize]}/>
             </TouchableOpacity>
         </LinearGradient>
     )
@@ -49,8 +50,4 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         textAlignVertical: 'center'
     },
-    imageSize: {
-        height:100,
-        width:100,
-    }
 })

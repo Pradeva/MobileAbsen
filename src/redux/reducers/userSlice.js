@@ -90,6 +90,9 @@ export const userSlice = createSlice({
             state.isLoading = false;
             state.dataProfile = action.payload;
         })
+        builder.addCase(fetchLogout.rejected, (state, action) => {
+            state.isLoading = false;
+        })
     },
 })
 

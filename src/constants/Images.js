@@ -13,4 +13,5 @@ export const GlobalImages = {
     IMGLEMBUR: require("../../assets/images/overwork.png"),
     IMGLOGO: require("../../assets/images/rastek-removebg-preview.png"),
     IMG_UNDERCONSTRUCTION: require("../../assets/images/under_construction.png"),
+    IMGLOGOUT: require("../../assets/images/logout.png"),
 }

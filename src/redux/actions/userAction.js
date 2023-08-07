@@ -3,6 +3,8 @@ import {openModal} from "../reducers/alertSlice";
 import axios from 'axios';
 import {baseURL} from '../../constants/Api'
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from '@react-navigation/native';
+import { ROUTES } from '../../navigations';
 
 export const generateCaptcha = () => {
     // Generate Random of Captcha
@@ -47,6 +49,7 @@ export const fetchLogin = createAsyncThunk('user/fetchLogin', async({
             jam_lebih : data.user.jam_lebih,
             jam_kurang : data.user.jam_kurang,
             jam_lembur : data.user.jam_lembur,
+            role_id : data.user.role_id,
             password: password,
             id: data.user.id,
             token: data.token,
@@ -162,6 +165,7 @@ export const postCuti = createAsyncThunk('user/postCuti', async({
 }, thunkAPI) => {
     try {
         const response = await axios.post(`${baseURL}api/cuti/create/store`, { users_id, tanggal_awal, tanggal_akhir, deskripsi });
+        console.log(response.data)
         const data = response.data;
     if (data.error == false) {
         thunkAPI.dispatch(openModal({type: "Information", message: "Sukses Menambah Data"}))
@@ -200,7 +204,11 @@ export const postLembur = createAsyncThunk('user/postLembur', async({
 })
 
 export const fetchLogout = createAsyncThunk('user/fetchLogout', async() => {
-    await AsyncStorage.removeItem('profileAsync');
-    return null
 
+    await AsyncStorage.removeItem('profileAsync');
+
+    // const navigation = useNavigation();
+    // navigation.navigate(ROUTES.LOGIN);
+
+    return null
 })

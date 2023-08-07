@@ -11,5 +11,6 @@ export default {
     MQTT: 'MqttScreen',
     DEMOLISTVIEW: 'DemoListViewScreen',
     CUTI: 'ListDataCutiScreen',
-    LEMBUR: 'ListDataLemburScreen'
+    LEMBUR: 'ListDataLemburScreen',
+    PROFILE: 'ProfileScreen'
 }

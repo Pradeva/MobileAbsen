@@ -55,6 +55,8 @@ const ModalForm = ({
                                 onPress={onPressSubmit}
                                 styleButton={{ width: '100%' }}
                                 {...btnTextProps}
+                                Color1={GlobalColors.RASTEKBIRU}
+                                Color2={GlobalColors.RASTEKUNGU}
                             >
                                 {textButton}
                             </ButtonText>

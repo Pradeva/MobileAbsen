@@ -3,7 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useSelector } from 'react-redux';
 import { BottomTabNavigator } from './index';
 import ROUTES from './Routes';
-import { Login, BluetoothBle, DashHeader, Home, Carousel, MqttHome, ListData, ListDataCuti, ListDataLembur } from '../screens';
+import { Login, BluetoothBle, DashHeader, Home, Carousel, MqttHome, ListData, ListDataCuti, ListDataLembur, Profile } from '../screens';
 
 const Stack = createNativeStackNavigator();
 
@@ -59,6 +59,11 @@ const StackNavigator = () => {
                 }}
             />
             <Stack.Screen name={ROUTES.LEMBUR} component={ListDataLembur}
+                options={{
+                    headerShown: false
+                }}
+            />
+            <Stack.Screen name={ROUTES.PROFILE} component={Profile}
                 options={{
                     headerShown: false
                 }}

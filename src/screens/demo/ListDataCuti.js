@@ -2,7 +2,7 @@ import { StyleSheet, Text, View, ScrollView, FlatList, TouchableOpacity, Alert }
 import React from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { ContainerView, ModalForm, ModalLoader, InputText, ButtonText, InputDate } from '../../components';
-import { GlobalColors, GlobalFontSizes, kDefaultPadding } from '../../constants/Styles';
+import { GlobalColors, GlobalFontSizes, GlobalHeights, kDefaultPadding } from '../../constants/Styles';
 import textStyles from '../../constants/TextStyles';
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
@@ -13,13 +13,20 @@ import moment from 'moment';
 const CutiList = ({ data, onPress }) => {
     return (
             <TouchableOpacity style={styles.card} onPress={onPress}>
-            <Text style={textStyles.textBold15}>{data.users_id} <Text style={{ ...textStyles.textBold12, color: GlobalColors.DANGER }}>({moment(data.tanggal_awal).format("dddd, DD MMMM YYYY")})</Text></Text>
-            <View style={styles.viewData}>
-                <Text style={{ ...textStyles.textMd12, color: GlobalColors.INFO }}>({moment(data.tanggal_akhir).format("dddd, DD MMMM YYYY")})</Text>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Icon name="star" size={GlobalFontSizes[24]} color={GlobalColors.WARNING} />
-                    <Text style={{...textStyles.textBold13, marginLeft: 5}}>{data.jumlah_hari}</Text>
-                    <Text style={{...textStyles.textBold13, marginLeft: 5}}>{data.status}</Text>
+            <View style={{flexDirection:'row'}}>
+                <View>
+                    <Text style={textStyles.textBold14}>USER ID</Text>
+                    <Text style={textStyles.textBold14}>TANGGAL AWAL</Text>
+                    <Text style={textStyles.textBold14}>TANGGAL AKHIR</Text>
+                    <Text style={textStyles.textBold14}>JUMLAH HARI</Text>
+                    <Text style={textStyles.textBold14}>DESKRIPSI</Text>
+                </View>
+                <View style={{paddingLeft:5}}>
+                    <Text style={textStyles.textBold14}>: {data.users_id}</Text>
+                    <Text style={textStyles.textBold14}>: {moment(data.tanggal_awal).format("dddd, DD MMMM YYYY")}</Text>
+                    <Text style={textStyles.textBold14}>: {moment(data.tanggal_akhir).format("dddd, DD MMMM YYYY")}</Text>
+                    <Text style={textStyles.textBold14}>: {data.jumlah_hari}</Text>
+                    <Text style={textStyles.textBold14}>: {data.deskripsi}</Text>
                 </View>
             </View>
         </TouchableOpacity>   
@@ -36,6 +43,7 @@ export default function ListData() {
     const [tanggal_akhir, setTanggalAkhir] = useState(null);
     const [jumlah_hari, setJumlahHari] = useState('');
     const [deskripsi, setDeskripsi] = useState('');
+    const [status, setStatus] = useState(null);
     const [selectedDate, setSelectedDate] = useState(null);
     const [isTanggalAwalValid, setIsTanggalAwalValid] = useState(true);
     const [isTanggalAkhirValid, setIsTanggalAkhirValid] = useState(true);
@@ -116,6 +124,7 @@ export default function ListData() {
         setTanggalAkhir(data.tanggal_akhir);
         setJumlahHari(data.jumlah_hari);
         setDeskripsi(data.deskripsi);
+        setStatus(data.status);
         setIsModalVisible2(true);
     }
 
@@ -126,28 +135,37 @@ export default function ListData() {
 
 
     return (
-        <ContainerView>
+        <View style={{backgroundColor:'#EAEAEA', paddingBottom: 20, height: GlobalHeights[100]}}>
             <ModalLoader isLoading={isLoading}/>
-                <ButtonText
-                    style={styles.buttonText} 
-                    Color1={GlobalColors.RASTEKBIRU}
-                    Color2={GlobalColors.RASTEKUNGU}
-                    onPress={handleOpenModal}
-                >
-                Ajukan Cuti
-                </ButtonText>
-                <ModalForm
+            <View style={{alignItems: 'center', paddingTop:10}}>
+                <Text style={{color:'black', fontWeight:'900', fontSize:20}}>CUTI</Text>
+            </View>
+            <ModalForm
                 isVisible={isModalVisible2}
                 onCloseModal={() => setIsModalVisible2(false)}
                 modalTitle={"Detail Cuti"}
                 textButton={"CLOSE"}
                 onPressSubmit={() => setIsModalVisible2(false)}
             >
-                <Text style={{...textStyles.textBold13,}}>User ID : {users_id}</Text>
-                <Text style={{...textStyles.textBold13,}}>Tanggal Awal : {tanggal_awal}</Text>
-                <Text style={{...textStyles.textBold13,}}>Tanggal Akhir : {tanggal_akhir}</Text>
-                <Text style={{...textStyles.textBold13,}}>Jumlah Hari : {jumlah_hari}</Text>
-                <Text style={{...textStyles.textBold13,}}>Status : {deskripsi}</Text>
+                <View style={{flexDirection:'row'}}>
+                    <View>
+                        <Text style={textStyles.textBold14}>USER ID</Text>
+                        <Text style={textStyles.textBold14}>TANGGAL AWAL</Text>
+                        <Text style={textStyles.textBold14}>TANGGAL AKHIR</Text>
+                        <Text style={textStyles.textBold14}>JUMLAH HARI</Text>
+                        <Text style={textStyles.textBold14}>DESKRIPSI</Text>
+                        <Text style={textStyles.textBold14}>STATUS</Text>
+                    </View>
+                    <View style={{paddingLeft:5}}>
+                        <Text style={textStyles.textBold14}>: {users_id}</Text>
+                        <Text style={textStyles.textBold14}>: {tanggal_awal}</Text>
+                        <Text style={textStyles.textBold14}>: {tanggal_akhir}</Text>
+                        <Text style={textStyles.textBold14}>: {jumlah_hari}</Text>
+                        <Text style={textStyles.textBold14}>: {deskripsi}</Text>
+                        <Text style={textStyles.textBold14}>: {status === 1 ? 'DISETUJUI' : status === 2 ? 'DITOLAK' : 'belum di approve'}</Text>
+                    </View>
+                </View>
+
                 </ModalForm>
                 <ModalForm 
                 isVisible={isModalVisible1} 
@@ -166,6 +184,7 @@ export default function ListData() {
                     }}
                 />
                 <InputDate
+                    fullBorder
                     title='TANGGAL AWAL'
                     onDateChange={(date) => {
                         setTanggalAwal(date)
@@ -176,6 +195,7 @@ export default function ListData() {
                 />
                 {!isTanggalAwalValid && <Text style={{ color: 'red' }}>TANGGAL AWAL cannot be empty.</Text>}
                 <InputDate
+                    fullBorder
                     title='TANGGAL AKHIR'
                     onDateChange={(date) => {
                         setTanggalAkhir(date)
@@ -191,7 +211,7 @@ export default function ListData() {
                     textInputConfig={{
                         placeholder: 'Masukkan deskripsi',
                         onChangeText: (val) => setDeskripsi(val), 
-                        style: !isDeskripsiValid ? { borderColor: 'red' } : null,
+                        // style: !isDeskripsiValid ? { borderColor: 'red' } : null,
                     }}
                 />
                 {!isDeskripsiValid && <Text style={{ color: 'red' }}>DESKRIPSI cannot be empty.</Text>}
@@ -199,14 +219,24 @@ export default function ListData() {
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: kDefaultPadding }}>
             {Object.keys(groupedData).map((month) => (
             <View key={month}>
-            <Text style={styles.monthHeader}>{month}</Text>
+            <Text style={{color:'black', marginBottom:5, fontWeight:'700'}}>{month}</Text>
             {groupedData[month].map((data, index) => (
               <CutiList key={`list_${month}_${index}`} data={data} onPress={() => _onPressList(data)} />
             ))}
           </View>
         ))}
-            </ScrollView>
-        </ContainerView>
+        </ScrollView>
+            <View style={{paddingTop:10}}>
+            <ButtonText
+                    style={styles.buttonText} 
+                    Color1={GlobalColors.RASTEKBIRU}
+                    Color2={GlobalColors.RASTEKUNGU}
+                    onPress={handleOpenModal}
+                >
+                Ajukan Cuti
+                </ButtonText>
+                </View>
+        </View>
     )
 }
     

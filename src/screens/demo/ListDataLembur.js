@@ -2,27 +2,38 @@ import { StyleSheet, Text, View, ScrollView, FlatList, TouchableOpacity, Alert }
 import React from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { ContainerView, ModalLoader, ModalForm, ButtonText, InputText, InputDate, DropDown, RadioButton} from '../../components';
-import { GlobalColors, GlobalFontSizes, kDefaultPadding } from '../../constants/Styles';
+import { GlobalColors, GlobalFontSizes,GlobalHeights, kDefaultPadding } from '../../constants/Styles';
 import textStyles from '../../constants/TextStyles';
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchLembur, postLembur } from '../../redux/actions/userAction';
 import { initialState } from '../../redux/reducers/userSlice';
 import moment from 'moment';
+import { useNavigation } from '@react-navigation/native';
+import { ROUTES } from '../../navigations';
+
+
 
 
 const LemburList = ({ data, onPress }) => {
     return (
         <TouchableOpacity style={styles.card} onPress={onPress}>
-            <Text style={textStyles.textBold15}>{data.users_id} <Text style={{ ...textStyles.textBold12, color: GlobalColors.DANGER }}>({moment(data.tanggal).format("dddd, DD MMMM YYYY")})</Text></Text>
-            <View style={styles.viewData}>
-                <Text style={{ ...textStyles.textMd12, color: GlobalColors.INFO }}>{data.jam_awal}</Text>
-                <Text style={{ ...textStyles.textMd12, color: GlobalColors.INFO }}>{data.jam_akhir}</Text>
-                <Text style={{ ...textStyles.textMd12, color: GlobalColors.INFO }}>{data.jumlah_jam}</Text>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Icon name="star" size={GlobalFontSizes[24]} color={GlobalColors.WARNING} />
-                    <Text style={{...textStyles.textBold13, marginLeft: 5}}>{data.status_kerja}</Text>
-                    <Text style={{...textStyles.textBold13, marginLeft: 5}}>{data.status}</Text>
+            <View style={{flexDirection:'row'}}>
+                <View>
+                    <Text style={textStyles.textBold14}>USER ID</Text>
+                    <Text style={textStyles.textBold14}>TANGGAL</Text>
+                    <Text style={textStyles.textBold14}>JAM AWAL</Text>
+                    <Text style={textStyles.textBold14}>JAM AKHIR</Text>
+                    <Text style={textStyles.textBold14}>JUMLAH JAM</Text>
+                    <Text style={textStyles.textBold14}>STATUS KERJA</Text>
+                </View>
+                <View style={{paddingLeft:5}}>
+                    <Text style={textStyles.textBold14}>: {data.users_id}</Text>
+                    <Text style={textStyles.textBold14}>: {moment(data.tanggal).format("dddd, DD MMMM YYYY")}</Text>
+                    <Text style={textStyles.textBold14}>: {data.jam_awal}</Text>
+                    <Text style={textStyles.textBold14}>: {data.jam_akhir}</Text>
+                    <Text style={textStyles.textBold14}>: {data.jumlah_jam}</Text>
+                    <Text style={textStyles.textBold14}>: {data.status_kerja}</Text>
                 </View>
             </View>
         </TouchableOpacity>
@@ -99,12 +110,14 @@ export default function ListData() {
               setStatusKerja('');
               setStatus('');
             }
+
           })
           .catch((error) => {
             setIsModalVisible1(true);
             // Show an error message using Alert
             Alert.alert('Error', 'An error occurred while posting data.');
           });
+
     };
 
     const validateInputs = () => {
@@ -147,16 +160,11 @@ export default function ListData() {
 
 
     return (
-        <ContainerView>
+        <View style={{backgroundColor:'#EAEAEA', paddingBottom: 20, height: GlobalHeights[100]}}>
             <ModalLoader isLoading={isLoading}/>
-            <ButtonText
-                style={styles.buttonText} 
-                Color1={GlobalColors.RASTEKBIRU}
-                Color2={GlobalColors.RASTEKUNGU}
-                onPress={()=>handleOpenModal()}
-            >
-                Pengajuan Lembur
-            </ButtonText>
+            <View style={{alignItems: 'center', paddingTop:10}}>
+                <Text style={{color:'black', fontWeight:'900', fontSize:20}}>LEMBUR</Text>
+            </View>
             <ModalForm
                 isVisible={isModalVisible2}
                 onCloseModal={() => setIsModalVisible2(false)}
@@ -191,7 +199,7 @@ export default function ListData() {
                 </View>
                 <View style={styles.section}>
                     <Text style={styles.label}>Status:</Text>
-                    <Text style={styles.detail}>{status}</Text>
+                    <Text style={styles.detail}>{status === 1 ? 'DISETUJUI' : status === 2 ? 'DITOLAK' : 'BELUM DI PROSES'}</Text>
                 </View>
             </View>
             </ModalForm>
@@ -209,19 +217,10 @@ export default function ListData() {
                         value: users_id,
                         editable: false,
                         onChangeText: (val) => setUserId(val),
-                        style: !isIdUserValid ? { borderColor: 'red' } : null, 
                     }}
                 />
                 {!isIdUserValid && <Text style={{ color: 'red' }}>ID USER cannot be empty.</Text>}
-                {/* <InputDate
-                    title="TANGGAL LEMBUR"
-                    onDateChange={(date) => setSelectedDate(date)}
-                    textInputConfig={{
-                    placeholder: 'Masukkan tanggal',
-                    value: selectedDate ? selectedDate.toDateString() : '', 
-                    editable: false, 
-                    }}
-                /> */}
+                
                 <InputDate
                     title='TANGGAL LEMBUR'
                     onDateChange={(date) => {
@@ -266,14 +265,25 @@ export default function ListData() {
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: kDefaultPadding }}>
             {Object.keys(groupedData).map((month) => (
           <View key={month}>
-            <Text style={styles.monthHeader}>{month}</Text>
+            <Text style={{color:'black', marginBottom:5, fontWeight:'700'}}>{month}</Text>
             {groupedData[month].map((data, index) => (
               <LemburList key={`list_${month}_${index}`} data={data} onPress={() => _onPressList(data)} />
             ))}
           </View>
         ))}
             </ScrollView>
-        </ContainerView>
+            <View style={{paddingTop:10}}>
+
+            <ButtonText
+                style={styles.buttonText} 
+                Color1={GlobalColors.RASTEKBIRU}
+                Color2={GlobalColors.RASTEKUNGU}
+                onPress={()=>handleOpenModal()}
+            >
+                Pengajuan Lembur
+            </ButtonText>
+            </View>
+        </View>
     )
 }
     
@@ -313,6 +323,6 @@ const styles = StyleSheet.create({
       },
       detail: {
         ...textStyles.text13,
-        color: GlobalColors.INFO, // Customize the detail color if needed
+        color: GlobalColors.DARK, // Customize the detail color if needed
       },
 }) 

@@ -33,8 +33,9 @@ export default function InputDate({
         <View style={[{ marginTop: kDefaultPadding, flex: 1 }]}>
             <Text
                 style={{
-                    ...textStyles.text13,
-                    color: GlobalColors.GREY_BORDER,
+                    ...textStyles.textMd13,
+                    color: GlobalColors.SECONDARY,
+                    
                     marginBottom: 0
                 }}
             >
