@@ -16,27 +16,34 @@ import { ROUTES } from '../../navigations';
 
 
 const LemburList = ({ data, onPress }) => {
+    const convertToHours = (minutes) => {
+        const hours = Math.floor(minutes / 60);
+        const remainingMinutes = minutes % 60;
+        return `${hours} jam ${remainingMinutes} menit`;
+      };
     return (
         <TouchableOpacity style={styles.card} onPress={onPress}>
-            <View style={{flexDirection:'row'}}>
-                <View>
-                    <Text style={textStyles.textBold14}>USER ID</Text>
-                    <Text style={textStyles.textBold14}>TANGGAL</Text>
-                    <Text style={textStyles.textBold14}>JAM AWAL</Text>
-                    <Text style={textStyles.textBold14}>JAM AKHIR</Text>
-                    <Text style={textStyles.textBold14}>JUMLAH JAM</Text>
-                    <Text style={textStyles.textBold14}>STATUS KERJA</Text>
-                </View>
-                <View style={{paddingLeft:5}}>
-                    <Text style={textStyles.textBold14}>: {data.users_id}</Text>
-                    <Text style={textStyles.textBold14}>: {moment(data.tanggal).format("dddd, DD MMMM YYYY")}</Text>
-                    <Text style={textStyles.textBold14}>: {data.jam_awal}</Text>
-                    <Text style={textStyles.textBold14}>: {data.jam_akhir}</Text>
-                    <Text style={textStyles.textBold14}>: {data.jumlah_jam}</Text>
-                    <Text style={textStyles.textBold14}>: {data.status_kerja}</Text>
-                </View>
-            </View>
-        </TouchableOpacity>
+        <View style={styles.rowContainer}>
+          <View style={styles.labelContainer}>
+            <Text style={styles.label}>User ID</Text>
+            <Text style={styles.label}>Tanggal</Text>
+            <Text style={styles.label}>Jam Awal</Text>
+            <Text style={styles.label}>Jam Akhir</Text>
+            <Text style={styles.label}>Jumlah Jam</Text>
+            <Text style={styles.label}>Status Kerja</Text>
+          </View>
+          <View style={styles.dataContainer}>
+            <Text style={styles.data}>: {data.users_id}</Text>
+            <Text style={styles.data}>: {moment(data.tanggal).format("dddd, DD MMMM YYYY")}</Text>
+            <Text style={styles.data}>: {data.jam_awal}</Text>
+            <Text style={styles.data}>: {data.jam_akhir}</Text>
+            <Text style={styles.data}>: {convertToHours(data.jumlah_jam)}</Text>
+            <Text style={styles.data}>
+              : {data.status_kerja === 2 ? 'Di Rumah' : data.status_kerja === 1 ? 'Di Kantor' : data.status_kerja}
+            </Text>
+          </View>
+        </View>
+      </TouchableOpacity>
     )
 }
 
@@ -60,6 +67,12 @@ export default function ListData() {
     const [isJamAwalValid, setIsJamAwalValid] = useState(true);
     const [isJamAkhirValid, setIsJamAkhirValid] = useState(true);
     const [isStatusKerjaValid, setIsStatusKerjaValid] = useState(true);
+
+    const convertToHours = (minutes) => {
+        const hours = Math.floor(minutes / 60);
+        const remainingMinutes = minutes % 60;
+        return `${hours} jam ${remainingMinutes} menit`;
+      };
 
     const groupDataByMonth = (data) => {
         const groupedData = {};
@@ -191,11 +204,11 @@ export default function ListData() {
                 </View>
                 <View style={styles.section}>
                     <Text style={styles.label}>Jumlah Jam:</Text>
-                    <Text style={styles.detail}>{jumlah_jam}</Text>
+                    <Text style={styles.detail}>{convertToHours(jumlah_jam)}</Text>
                 </View>
                 <View style={styles.section}>
                     <Text style={styles.label}>Status Kerja:</Text>
-                    <Text style={styles.detail}>{status_kerja === 1 ? 'Di Rumah' : status_kerja === 2 ? 'Di Kantor' : status_kerja}</Text>
+                    <Text style={styles.detail}>{status_kerja === 2 ? 'Di Rumah' : status_kerja === 1 ? 'Di Kantor' : status_kerja}</Text>
                 </View>
                 <View style={styles.section}>
                     <Text style={styles.label}>Status:</Text>
@@ -254,25 +267,25 @@ export default function ListData() {
                 <RadioButton
                     title="PILIH LOKASI"
                     dataRadio={[
-                        { label: 'Di Rumah', value: 1 },
-                        { label: 'Di Kantor', value: 2 },
+                        { label: 'Di Rumah', value: 2 },
+                        { label: 'Di Kantor', value: 1 },
                     ]}
                     initialValue={status_kerja}
                     onPress={(value) => setStatusKerja(value)}
                     
                 />
             </ModalForm>
-            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: kDefaultPadding }}>
+            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.contentContainer}>
             {Object.keys(groupedData).map((month) => (
           <View key={month}>
-            <Text style={{color:'black', marginBottom:5, fontWeight:'700'}}>{month}</Text>
+            <Text style={styles.monthTitle}>{month}</Text>
             {groupedData[month].map((data, index) => (
               <LemburList key={`list_${month}_${index}`} data={data} onPress={() => _onPressList(data)} />
             ))}
           </View>
         ))}
             </ScrollView>
-            <View style={{paddingTop:10}}>
+            <View style={styles.buttonContainer}>
 
             <ButtonText
                 style={styles.buttonText} 
@@ -324,5 +337,63 @@ const styles = StyleSheet.create({
       detail: {
         ...textStyles.text13,
         color: GlobalColors.DARK, // Customize the detail color if needed
+      },
+
+      rowContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+      },
+      labelContainer: {
+        flex: 1,
+      },
+      dataContainer: {
+        flex: 1,
+        paddingLeft: 5,
+      },
+      label: {
+        fontFamily: 'Roboto-Bold',
+        fontSize: 13,
+        color: '#333333',
+        marginBottom: 4,
+      },
+      data: {
+        fontFamily: 'Roboto-Regular',
+        fontSize: 13,
+        color: '#666666',
+        marginBottom: 4,
+      },
+
+      container: {
+        flex: 1,
+        backgroundColor: GlobalColors.LIGHT,
+        paddingBottom: 20,
+      },
+      header: {
+        alignItems: 'center',
+        paddingTop: 10,
+      },
+      headerText: {
+        color: 'black',
+        fontWeight: '900',
+        fontSize: 20,
+      },
+      contentContainer: {
+        padding: kDefaultPadding,
+      },
+      monthTitle: {
+        color: 'black',
+        marginBottom: 5,
+        fontWeight: '700',
+        fontSize: GlobalFontSizes[16],
+      },
+      buttonContainer: {
+        paddingTop: 10,
+        alignItems: 'center',
+      },
+      buttonText: {
+        fontSize: GlobalFontSizes[16],
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 8,
       },
 }) 

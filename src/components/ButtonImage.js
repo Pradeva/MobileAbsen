@@ -38,8 +38,8 @@ const styles = StyleSheet.create({
     },
     buttonOuterContainer: {
         borderRadius: 6,
-        marginVertical: 10,
-        marginHorizontal: 5,
+        marginVertical: 0,
+        marginHorizontal: 0,
         overflow: 'hidden'
     },
     buttonInnerContainer: {
