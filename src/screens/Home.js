@@ -1,13 +1,14 @@
 import { View, StyleSheet, StatusBar, ScrollView, Text, Image } from 'react-native';
-import React, { useState } from 'react';
-import { ButtonText, ContainerView, ModalLoader, ProfileImage } from '../components';
+import React, { useEffect, useState } from 'react';
+import { ButtonText, Carousel, ContainerView, ModalLoader, ProfileImage } from '../components';
 import ButtonImage from '../components/ButtonImage';
+import { dataCarousel } from '../constants/Api';
 //Navigation
 import { useNavigation } from '@react-navigation/native';
 import { ROUTES } from '../navigations';
 //Redux
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchLogout } from '../redux/actions/userAction';
+import { fetchCuti, fetchLembur, fetchLogAbsen, fetchLogin, fetchLogout } from '../redux/actions/userAction';
 import { GlobalWidths, GlobalHeights, GlobalColors } from '../constants/Styles';
 import LinearGradient from 'react-native-linear-gradient'; // Import LinearGradient
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -28,13 +29,19 @@ export default function Home() {
         // Navigate to the login page after logout
         navigation.navigate(ROUTES.LOGIN);
     };
-    const { dataProfile, logAbsenData } = useSelector(state => state.user)
+    const { dataProfile, logAbsenData, lemburData, cutiData } = useSelector(state => state.user)
     console.log(dataProfile)
 
     const [shadowOffsetWidth, setShadowOffsetWidth] = useState(0);
     const [shadowOffsetHeight, setShadowOffsetHeight] = useState(0);
     const [shadowRadius, setShadowRadius] = useState(0);
     const [shadowOpacity, setShadowOpacity] = useState(0.1);
+
+    useEffect(()=>{
+        dispatch(fetchLogAbsen({idUser:dataProfile.id})),
+        dispatch(fetchCuti({idUser: dataProfile.id})),
+        dispatch(fetchLembur({idUser: dataProfile.id}))
+    },[]);
   
 
     return (
@@ -48,16 +55,36 @@ export default function Home() {
             >
             </ButtonImage>
             
-
-
-
-            {/* <LinearGradient  colors={['white', 'white']} style={styles.container}> */}
             
-            {/* <LinearGradient colors={[GlobalColors.RASTEKBIRU, GlobalColors.RASTEKUNGU]} 
-                start={{ x: 0, y: 0 }} 
-                end={{ x: 1, y: 0 }} 
-                style={[styles.box]}> */}
+
+
             <View style={[styles.box, {backgroundColor: '#1C305E'}]}>
+            <ScrollView
+                horizontal={true}
+                style={[styles.container,{paddingHorizontal:GlobalWidths[25]}]}
+                 snapToInterval={200} // Set to the width of each item
+                decelerationRate="fast" // Control the deceleration rate after releasing the scroll gesture
+                >
+                <View style={styles.item}>
+                    <Text>Item 1</Text>
+                </View>
+                <View style={styles.item}>
+                    <Text>Item 2</Text>
+                </View>
+                <View style={styles.item}>
+                    <Text>Item 3</Text>
+                </View>
+                <View style={styles.item}>
+                    <Text>Item 3</Text>
+                </View>
+                <View style={styles.item}>
+                    <Text>Item 3</Text>
+                </View>
+                <View style={styles.item}>
+                    <Text>Item 3</Text>
+                </View>
+                {/* Add more items here */}
+            </ScrollView>
                     <Text style={[styles.textStyle, {marginTop: '20%'},{marginLeft: 30}]}>Menu</Text>
                     <View style={[styles.gridContainer]}>
                         <View style={[styles.gridContainer, {flexDirection:'column'}]}>
@@ -99,7 +126,8 @@ export default function Home() {
                     </View>
             </View>
             {/* </LinearGradient> */}
-            <View style={[styles.overlay, {shadowOffset: {
+            
+            {/* <View style={[styles.overlay, {shadowOffset: {
             width: shadowOffsetWidth,
             height: -shadowOffsetHeight,
           },
@@ -121,7 +149,7 @@ export default function Home() {
                         <Text style={[{color:'black', fontSize:14, fontWeight:'bold'}]}> : {logAbsenData[0]?.jam_keluar}</Text>
                     </View>
                 </View>
-            </View>
+            </View> */}
 
             {/* </LinearGradient> */}
             <ButtonImage children={GlobalImages.IMGLOGOUT} 
@@ -166,11 +194,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 20,
     },
-    container: {
-        flex: 1,
-        backgroundColor:'white',
-        justifyContent: 'flex-end', // Mengatur konten di bagian bawah container
-      },
     box: {
         width: GlobalWidths[100] ,
         height: GlobalHeights[60],
@@ -211,5 +234,24 @@ const styles = StyleSheet.create({
         height: GlobalHeights[10],
         
         // resizeMode: 'contain', // You can adjust the image's resize mode
+      },
+      containerCarousel: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#f5f5f5',
+      },
+
+      container: {
+        flex: 1,
+        flexDirection: 'row', // This is important for horizontal scrolling
+      },
+      item: {
+        width: 200,
+        height: 200,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'lightgray',
+        marginRight: 10,
       },
 })

@@ -71,18 +71,6 @@ export const fetchLogin = createAsyncThunk('user/fetchLogin', async({
 }
 })
 
-// export const fetchLogAbsen = createAsyncThunk('user/fetchLogAbsen', async() =>  {
-//   try {
-//     const response = await axios.get(`http://172.20.10.3:8000/api/log_absen`);
-//     console.log(response)
-//     const logAbsenData = response.data;
-//     return logAbsenData;
-// } catch (err) {
-//     dispatch(openModal({type: "Information", message: "Gagal Mengambil Data"}))
-//     return []
-//   } 
-// })
-
 export const fetchLogAbsen = createAsyncThunk('user/fetchLogAbsen', async({idUser}, thunkAPI) => {
     try {
         console.log(idUser)
