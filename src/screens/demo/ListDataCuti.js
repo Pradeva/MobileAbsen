@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, ScrollView, FlatList, TouchableOpacity, Alert } from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { ContainerView, ModalForm, ModalLoader, InputText, ButtonText, InputDate } from '../../components';
+import { ContainerView, ModalForm, ModalLoader, InputText, ButtonText, InputDate, FilterComponent } from '../../components';
 import { GlobalColors, GlobalFontSizes, GlobalHeights, kDefaultPadding } from '../../constants/Styles';
 import textStyles from '../../constants/TextStyles';
 import { useEffect, useState } from 'react';
@@ -12,24 +12,26 @@ import moment from 'moment';
 
 const CutiList = ({ data, onPress }) => {
     return (
-            <TouchableOpacity style={styles.card} onPress={onPress}>
-            <View style={{flexDirection:'row'}}>
-                <View>
-                    <Text style={textStyles.textBold14}>USER ID</Text>
-                    <Text style={textStyles.textBold14}>TANGGAL AWAL</Text>
-                    <Text style={textStyles.textBold14}>TANGGAL AKHIR</Text>
-                    <Text style={textStyles.textBold14}>JUMLAH HARI</Text>
-                    <Text style={textStyles.textBold14}>DESKRIPSI</Text>
-                </View>
-                <View style={{paddingLeft:5}}>
-                    <Text style={textStyles.textBold14}>: {data.users_id}</Text>
-                    <Text style={textStyles.textBold14}>: {moment(data.tanggal_awal).format("dddd, DD MMMM YYYY")}</Text>
-                    <Text style={textStyles.textBold14}>: {moment(data.tanggal_akhir).format("dddd, DD MMMM YYYY")}</Text>
-                    <Text style={textStyles.textBold14}>: {data.jumlah_hari}</Text>
-                    <Text style={textStyles.textBold14}>: {data.deskripsi}</Text>
-                </View>
-            </View>
-        </TouchableOpacity>   
+        <TouchableOpacity style={styles.card} onPress={onPress}>
+        <View style={styles.rowContainer}>
+          <View style={styles.labelContainer}>
+            <Text style={styles.label}>User ID</Text>
+            <Text style={styles.label}>Tanggal Awal</Text>
+            <Text style={styles.label}>Tanggal Akhir</Text>
+            <Text style={styles.label}>Jumlah Hari</Text>
+            <Text style={styles.label}>Deskripsi</Text>
+          </View>
+          <View style={styles.dataContainer}>
+            <Text style={styles.data}>: {data.users_id}</Text>
+            <Text style={styles.data}>: {moment(data.tanggal_awal).format("dddd, DD MMMM YYYY")}</Text>
+            <Text style={styles.data}>: {moment(data.tanggal_akhir).format("dddd, DD MMMM YYYY")}</Text>
+            <Text style={styles.data}>: {data.jumlah_hari}</Text>
+            <Text style={styles.data}>: {data.deskripsi}</Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+
+      
     )
 }
 
@@ -48,6 +50,14 @@ export default function ListData() {
     const [isTanggalAwalValid, setIsTanggalAwalValid] = useState(true);
     const [isTanggalAkhirValid, setIsTanggalAkhirValid] = useState(true);
     const [isDeskripsiValid, setIsDeskripsiValid] = useState(true);
+    const [filteredMonth, setFilteredMonth] = useState('');
+    const [filteredYear, setFilteredYear] = useState('');
+    
+    
+    const handleFilterChange = (month, year) => {
+      setFilteredMonth(month);
+      setFilteredYear(year);
+    };
 
     const groupDataByMonth = (data) => {
         const groupedData = {};
@@ -62,6 +72,22 @@ export default function ListData() {
       };
 
       const groupedData = groupDataByMonth(cutiData);
+
+      const FilterData = (data) => {
+        const filteredData = {};
+        data.forEach((item) => {
+          const month = moment(item.tanggal_awal).format('MMMM YYYY');
+          if (!filteredData[month]) {
+            filteredData[month] = [];
+          }
+          if (month === filteredMonth) {  
+            filteredData[month].push(item);
+          }
+        });
+        return filteredData;
+      };
+
+      const filteredData = FilterData(cutiData);
 
     
     useEffect(() => {
@@ -139,7 +165,9 @@ export default function ListData() {
             <ModalLoader isLoading={isLoading}/>
             <View style={{alignItems: 'center', paddingTop:10}}>
                 <Text style={{color:'black', fontWeight:'900', fontSize:20}}>CUTI</Text>
+                
             </View>
+            <FilterComponent onFilterChange={handleFilterChange} />
             <ModalForm
                 isVisible={isModalVisible2}
                 onCloseModal={() => setIsModalVisible2(false)}
@@ -147,24 +175,32 @@ export default function ListData() {
                 textButton={"CLOSE"}
                 onPressSubmit={() => setIsModalVisible2(false)}
             >
-                <View style={{flexDirection:'row'}}>
-                    <View>
-                        <Text style={textStyles.textBold14}>USER ID</Text>
-                        <Text style={textStyles.textBold14}>TANGGAL AWAL</Text>
-                        <Text style={textStyles.textBold14}>TANGGAL AKHIR</Text>
-                        <Text style={textStyles.textBold14}>JUMLAH HARI</Text>
-                        <Text style={textStyles.textBold14}>DESKRIPSI</Text>
-                        <Text style={textStyles.textBold14}>STATUS</Text>
-                    </View>
-                    <View style={{paddingLeft:5}}>
-                        <Text style={textStyles.textBold14}>: {users_id}</Text>
-                        <Text style={textStyles.textBold14}>: {tanggal_awal}</Text>
-                        <Text style={textStyles.textBold14}>: {tanggal_akhir}</Text>
-                        <Text style={textStyles.textBold14}>: {jumlah_hari}</Text>
-                        <Text style={textStyles.textBold14}>: {deskripsi}</Text>
-                        <Text style={textStyles.textBold14}>: {status === 1 ? 'DISETUJUI' : status === 2 ? 'DITOLAK' : 'belum di approve'}</Text>
-                    </View>
+                <View style={styles.modalContent}>
+                <View style={styles.section}>
+                    <Text style={styles.label}>User ID :</Text>
+                    <Text style={styles.detail}>{users_id}</Text>
                 </View>
+                <View style={styles.section}>
+                    <Text style={styles.label}>Tanggal Awal :</Text>
+                    <Text style={styles.detail}>{tanggal_awal}</Text>
+                </View>
+                <View style={styles.section}>
+                    <Text style={styles.label}>Tanggal Akhir :</Text>
+                    <Text style={styles.detail}>{tanggal_akhir}</Text>
+                </View>
+                <View style={styles.section}>
+                    <Text style={styles.label}>Jumlah Hari :</Text>
+                    <Text style={styles.detail}>{jumlah_hari}</Text>
+                </View>
+                <View style={styles.section}>
+                    <Text style={styles.label}>Deskripsi :</Text>
+                    <Text style={styles.detail}>{deskripsi}</Text>
+                </View>
+                <View style={styles.section}>
+                    <Text style={styles.label}>Status:</Text>
+                    <Text style={styles.detail}>{status === 1 ? 'DISETUJUI' : status === 2 ? 'DITOLAK' : 'belum di approve'}</Text>
+                </View>
+            </View>
 
                 </ModalForm>
                 <ModalForm 
@@ -216,17 +252,27 @@ export default function ListData() {
                 />
                 {!isDeskripsiValid && <Text style={{ color: 'red' }}>DESKRIPSI cannot be empty.</Text>}
             </ModalForm>
-            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: kDefaultPadding }}>
+            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.contentContainer}>
             {Object.keys(groupedData).map((month) => (
-            <View key={month}>
-            <Text style={{color:'black', marginBottom:5, fontWeight:'700'}}>{month}</Text>
-            {groupedData[month].map((data, index) => (
-              <CutiList key={`list_${month}_${index}`} data={data} onPress={() => _onPressList(data)} />
+              <View key={month}>
+                {!filteredMonth && (
+                  <Text style={styles.monthTitle}>{month}</Text>
+                )}
+                {!filteredMonth ? (
+                  groupedData[month].map((data, index) => (
+                    <CutiList key={`list_${month}_${index}`} data={data} onPress={() => _onPressList(data)} />
+                  ))
+                ) : filteredData[month] && filteredData[month].length > 0 ? (
+                  filteredData[month].map((data, index) => (
+                    <CutiList key={`filtered_list_${month}_${index}`} data={data} onPress={() => _onPressList(data)} />
+                  ))
+                ) : (
+                  <Text style={styles.noDataText}>Data not available</Text>
+                )}
+              </View>
             ))}
-          </View>
-        ))}
-        </ScrollView>
-            <View style={{paddingTop:10}}>
+          </ScrollView>
+        <View style={styles.buttonContainer}>
             <ButtonText
                     style={styles.buttonText} 
                     Color1={GlobalColors.RASTEKBIRU}
@@ -239,6 +285,29 @@ export default function ListData() {
         </View>
     )
 }
+
+const pickerSelectStyles = StyleSheet.create({
+  inputIOS: {
+    fontSize: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 4,
+    color: 'black',
+    paddingRight: 30,
+  },
+  inputAndroid: {
+    fontSize: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderWidth: 0.5,
+    borderColor: 'purple',
+    borderRadius: 8,
+    color: 'black',
+    paddingRight: 30,
+  },
+});
     
 const styles = StyleSheet.create({
     card: {
@@ -249,7 +318,7 @@ const styles = StyleSheet.create({
         shadowColor: 'black',
         shadowOffset: {
             width: 0,
-            height: 3
+            height: 4
         },
         shadowOpacity: 0.24,
         shadowRadius: 4,
@@ -260,5 +329,80 @@ const styles = StyleSheet.create({
         // marginBottom: 5,
         justifyContent: 'space-between',
         alignItems: 'center'
-    }
-}) 
+    },
+    modalContent: {
+        paddingHorizontal: kDefaultPadding,
+        paddingTop: kDefaultPadding,
+      },
+      section: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 10,
+      },
+      label: {
+        ...textStyles.textBold13,
+        color: GlobalColors.DARK, // Customize the label color if needed
+      },
+      detail: {
+        ...textStyles.text13,
+        color: GlobalColors.DARK, // Customize the detail color if needed
+      },
+
+      rowContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+      },
+      labelContainer: {
+        flex: 1,
+      },
+      dataContainer: {
+        flex: 1,
+        paddingLeft: 5,
+      },
+      label: {
+        fontFamily: 'Roboto-Bold',
+        fontSize: 12,
+        color: '#333333',
+        marginBottom: 7,
+      },
+      data: {
+        fontFamily: 'Roboto-Regular',
+        fontSize: 12,
+        color: '#666666',
+        marginBottom: 7,
+      },
+
+      container: {
+        flex: 1,
+        backgroundColor: GlobalColors.LIGHT,
+        paddingBottom: 20,
+      },
+      header: {
+        alignItems: 'center',
+        paddingTop: 10,
+      },
+      headerText: {
+        color: 'black',
+        fontWeight: '900',
+        fontSize: 20,
+      },
+      contentContainer: {
+        padding: kDefaultPadding,
+      },
+      monthTitle: {
+        color: 'black',
+        marginBottom: 5,
+        fontWeight: '700',
+        fontSize: GlobalFontSizes[16],
+      },
+      buttonContainer: {
+        paddingTop: 10,
+        alignItems: 'center',
+      },
+      buttonText: {
+        fontSize: GlobalFontSizes[16],
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 8,
+      },
+})

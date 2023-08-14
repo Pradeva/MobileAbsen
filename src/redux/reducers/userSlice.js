@@ -1,14 +1,16 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { initLogin, fetchLogin, fetchLogout, generateCaptcha, fetchLogAbsen, fetchCuti, fetchLembur, postCuti } from "../actions/userAction";
+import { initLogin, fetchLogin, fetchLogout, generateCaptcha, fetchLogAbsen, fetchCuti, fetchLembur, postCuti, fetchLibur } from "../actions/userAction";
 
 export const initialState = {
     dataProfile: null,
     logAbsenData : [],
     cutiData : [],
     lemburData : [],
+    liburNasional: [],
     isLoading: false,
     dataCaptcha: [],
-    textCaptcha: ""
+    textCaptcha: "",
+    msgApi : ""
 }
 
 
@@ -72,6 +74,17 @@ export const userSlice = createSlice({
             state.lemburData = action.payload
             state.isLoading = false;
         })
+        //fetchLibur
+        builder.addCase(fetchLibur.rejected, (state, action) => {
+            state.isLoading = false;
+        })
+        builder.addCase(fetchLibur.pending, (state, action) => {
+            state.isLoading = true;
+        })
+        builder.addCase(fetchLibur.fulfilled, (state, action) => {
+            state.liburNasional = action.payload
+            state.isLoading = false;
+        })
         //postCuti
         builder.addCase(postCuti.rejected, (state, action) => {
             state.isLoading = false;
@@ -88,7 +101,7 @@ export const userSlice = createSlice({
         })
         builder.addCase(fetchLogout.fulfilled, (state, action) => {
             state.isLoading = false;
-            state.dataProfile = action.payload;
+            state.msgApi = "Logout";
         })
         builder.addCase(fetchLogout.rejected, (state, action) => {
             state.isLoading = false;

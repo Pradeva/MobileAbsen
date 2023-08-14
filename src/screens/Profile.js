@@ -1,71 +1,102 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { View, Text, StyleSheet, ImageBackground, ScrollView } from 'react-native';
+import { useSelector } from 'react-redux';
 import { GlobalHeights, GlobalWidths } from '../constants/Styles';
-
-
+import { GlobalImages } from '../constants/Images';
+import { ProfileImage } from '../components';
 
 export default function ProfileScreen() {
-  const {dataProfile } = useSelector(state => state.user)
-  
-  
+  const { dataProfile } = useSelector(state => state.user);
+
+  const convertToHours = minutes => {
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+    return `${hours} jam ${remainingMinutes} menit`;
+  };
+
   return (
-    <View style={{width:GlobalWidths[100], height:GlobalHeights[100], backgroundColor:'#EAEAEA', alignItems:'center'}}>
-        <View style={{width:GlobalWidths[100], height:GlobalHeights[40], backgroundColor:'#1C305E', borderBottomStartRadius:GlobalWidths[20], borderBottomEndRadius:GlobalWidths[20]}}>
-            <Text style={styles.name}>{dataProfile.name}</Text>
-
+    <ScrollView contentContainerStyle={styles.container}>
+      <ImageBackground source={GlobalImages.BGPROFILE} style={styles.header}>
+        <View style={styles.profileImageContainer}>
+        <ProfileImage size={80} />
         </View>
-        <Text style={{fontSize:25, paddingTop:20}}>INFORMASI KARYAWAN</Text>
+        <Text style={styles.name}>{dataProfile.name}</Text>
+      </ImageBackground>
+      <View style={styles.content}>
+        <Text style={styles.infoTitle}>Informasi User</Text>
 
-        <View style={{flexDirection:'row'}}>
-            <View>
-                <Text>Sisa Cuti</Text>
-                <Text>Jumlah Jam Lebih</Text>
-                <Text>Jumlah Jam Kurang</Text>
-            </View>
-            <View>
-                <Text>: {dataProfile.sisa_cuti}</Text>
-                <Text>: {dataProfile.jam_lebih}</Text>
-                <Text>: {dataProfile.jam_kurang}</Text>
-            </View>
+        <View style={styles.infoList}>
+          <InfoItem label="Sisa Cuti" value={dataProfile.sisa_cuti} />
+          <InfoItem label="Jumlah Jam Lebih" value={convertToHours(dataProfile.jam_lebih)} />
+          <InfoItem label="Jumlah Jam Kurang" value={convertToHours(dataProfile.jam_kurang)} />
         </View>
-      {/* <Text style={styles.role}>Jabatan : {dataProfile.role_id}</Text>
-      <Text style={styles.role}>Sisa Cuti : {dataProfile.sisa_cuti}</Text>
-      <Text style={styles.jumlahJamKerja}>Jumlah Jam Lebih: {dataProfile.jam_lebih}</Text>
-      <Text style={styles.jumlahJamKerja}>Jumlah Jam Kurang: {dataProfile.jam_kurang}</Text> */}
-    </View>
+      </View>
+    </ScrollView>
   );
-};
+}
+
+const InfoItem = ({ label, value }) => (
+  <View style={styles.infoItem}>
+    <Text style={styles.infoLabel}>{label}</Text>
+    <Text style={styles.infoValue}>{value}</Text>
+  </View>
+);
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#f9f9f9',
-    borderRadius: 10,
-    padding: 20,
-    marginVertical: 10,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 100,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    flex: 1,
+    backgroundColor: '#f8f8f8',
+  },
+  header: {
+    width: '100%',
+    height: 200,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    backgroundColor: '#4a90e2',
+    position: 'relative',
+    borderRadius: 20,
+    overflow: 'hidden',
   },
   name: {
     fontSize: 24,
     fontWeight: 'bold',
+    color: 'black',
+    marginTop: 115
+  },
+  content: {
+    padding: 20,
+  },
+  profileImageContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 140,
+    right: 0,
+    alignItems: 'center',
+    marginTop: 40, // Atur jarak atas sesuai kebutuhan
+  },
+  infoTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    color: '#333',
+  },
+  infoList: {
+    marginTop: 0,
+  },
+  infoItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 10,
-    color: 'white',
   },
-  role: {
-    fontSize: 18,
-    marginBottom: 5,
-    color: '#666',
-  },
-  jumlahJamKerja: {
+  infoLabel: {
+    flex: 1,
     fontSize: 16,
-    color: '#999',
+    color: '#333',
+  },
+  infoValue: {
+    fontSize: 18,
+    color: '#666',
   },
 });
