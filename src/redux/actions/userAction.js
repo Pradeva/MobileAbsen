@@ -145,7 +145,33 @@ export const fetchLembur = createAsyncThunk('user/fetchLembur', async({idUser}, 
     } 
 })
 
-export const fetchLibur = createAsyncThunk('user/fetchLibur', async({}, thunkAPI) => {
+// export const fetchLibur = createAsyncThunk('user/fetchLibur', async({}, thunkAPI) => {
+//     try {
+//         const response = await fetch(`${baseURL}api/libur_nasional`, {
+//             method: "GET",
+//             headers: {
+//                 'Content-Type': 'application/json',
+//                 // "Authorization": "Bearer " + token,
+//             }
+//         });
+//         console.log(response.json())
+
+//         if (response.status === 200) {
+//             const responseJson = await response.json();
+//             const dataResponse = responseJson.list
+//             return dataResponse
+//         }
+//         else{
+//             dispatch(openModal({type: "Information", message: "Gagal Mengambil Data"}))
+//             return []
+//         }
+//     } catch (err) {
+//         dispatch(openModal({type: "Information", message: "Gagal Mengambil Data"}))
+//         return []
+//     } 
+// })
+
+export const fetchLibur = createAsyncThunk('user/fetchLibur', async(_, thunkAPI) => {
     try {
         const response = await fetch(`${baseURL}api/libur_nasional`, {
             method: "GET",
@@ -154,20 +180,23 @@ export const fetchLibur = createAsyncThunk('user/fetchLibur', async({}, thunkAPI
                 // "Authorization": "Bearer " + token,
             }
         });
+        // console.log(response.json)
+
         if (response.status === 200) {
             const responseJson = await response.json();
             const dataResponse = responseJson.list
             return dataResponse
-        }
-        else{
-            dispatch(openModal({type: "Information", message: "Gagal Mengambil Data"}))
+        } else {
+            thunkAPI.dispatch(openModal({type: "Information", message: "Gagal Mengambil Data"}))
             return []
         }
     } catch (err) {
-        dispatch(openModal({type: "Information", message: "Gagal Mengambil Data"}))
+        thunkAPI.dispatch(openModal({type: "Information", message: "Gagal Mengambil Data"}))
         return []
     } 
+
 })
+
 
 export const postCuti = createAsyncThunk('user/postCuti', async({
     users_id,
@@ -217,4 +246,5 @@ export const postLembur = createAsyncThunk('user/postLembur', async({
 
 export const fetchLogout = createAsyncThunk('user/fetchLogout', async() => {
     await AsyncStorage.removeItem('profileAsync');
+    return null;
 })

@@ -1,29 +1,27 @@
 import { View, StyleSheet, StatusBar, ScrollView, Text, Image } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import { ButtonText, Carousel, ContainerView, ModalLoader, ProfileImage } from '../components';
-import React, { useState } from 'react';
+import React, { useEffect, useState, useMemo} from 'react';
 import { ButtonText, Carousel, ContainerView, ModalLoader, ProfileImage } from '../components';
 import ButtonImage from '../components/ButtonImage';
 import { dataCarousel } from '../constants/Api';
 //Navigation
-import { useNavigation } from '@react-navigation/native';
-import { ROUTES } from '../navigations';
+import { useNavigation, CommonActions } from '@react-navigation/native';
+import { ROUTES, StackNavigator } from '../navigations';
 //Redux
-import { useSelector, useDispatch, useEffect } from 'react-redux';
-import { fetchLogout } from '../redux/actions/userAction';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchLogout, fetchLogAbsen, fetchCuti,fetchLembur,fetchLibur } from '../redux/actions/userAction';
 import { GlobalWidths, GlobalHeights, GlobalColors } from '../constants/Styles';
 import LinearGradient from 'react-native-linear-gradient'; // Import LinearGradient
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { style } from 'deprecated-react-native-prop-types/DeprecatedImagePropType';
 import { color } from 'react-native-reanimated';
-import { initialState } from '../redux/reducers/userSlice';
+import { initialState, resetMsgApiUser } from '../redux/reducers/userSlice';
 import moment from 'moment';
 import textStyles from '../constants/TextStyles';
-import { dataCarousel } from '../constants/Api';
 
 
 
 import { GlobalImages } from '../constants/Images';
+import Routes from '../navigations/Routes';
 
 export default function Home() {
     const navigation = useNavigation()
@@ -31,19 +29,23 @@ export default function Home() {
 
     const handleLogout = async () => {
         // Dispatch the logout action
-        await dispatch(fetchLogout());
-        if(msgApi == "Logout") {
-            // Navigate to the login page after logout
-            navigation.navigate(ROUTES.LOGIN);
-        }
-        
+        dispatch(fetchLogout());
+        // if(msgApi == "Logout") {
+        //     navigation.navigate(ROUTES.LOGIN);
+        // }
     };
 
     
-    const { dataProfile, logAbsenData, msgApi } = useSelector(state => state.user)
+    const { dataProfile, logAbsenData,cutiData,lemburData,liburNasional, msgApi } = useSelector(state => state.user)
 
     const lastIndex = logAbsenData.length - 1;
     const lastAbsenData = lastIndex >= 0 ? logAbsenData[lastIndex] : null;
+    
+    const lastIndexCuti = cutiData.length - 1;
+    const lastCutiData = lastIndexCuti >= 0 ? cutiData[lastIndexCuti] : null;
+
+    const lastIndexLembur = lemburData.length - 1;
+    const lastLemburData = lastIndexLembur >= 0 ? lemburData[lastIndexLembur] : null;
 
     const [shadowOffsetWidth, setShadowOffsetWidth] = useState(0);
     const [shadowOffsetHeight, setShadowOffsetHeight] = useState(0);
@@ -53,13 +55,123 @@ export default function Home() {
     useEffect(()=>{
         dispatch(fetchLogAbsen({idUser:dataProfile.id})),
         dispatch(fetchCuti({idUser: dataProfile.id})),
-        dispatch(fetchLembur({idUser: dataProfile.id}))
+        dispatch(fetchLembur({idUser: dataProfile.id})),
+        dispatch(fetchLibur())
     },[]);
-  
+
+    useEffect(()=>{
+      if(msgApi==='Logout'){
+        dispatch(resetMsgApiUser())
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 1,
+            routes: [{name: Routes.LOGIN}]
+          })
+        )
+      }
+    },[msgApi])
+    // console.log(1)
+    // console.log(lastCutiData)
+
+    let statusText = '';
+
+    if(lastAbsenData !== null){
+      tanggal = lastAbsenData['tanggal'];
+      jamMasuk = lastAbsenData['jam_masuk'];
+      jamKeluar = lastAbsenData['jam_keluar'];
+      if (lastAbsenData['keterlambatan'] === 0) {
+        statusText = 'Terpenuhi';
+      } else if (lastAbsenData['keterlambatan'] === 1) {
+        statusText = 'Tidak Terpenuhi';
+      }
+    }else{
+      tanggal = '';
+      jamMasuk = '';
+      jamKeluar = '';
+      statusText = '';
+    }
+
+    if(lastCutiData !== null){
+      deskripsiCuti = lastCutiData['deskripsi'];
+      jumlahHariCuti = lastCutiData['jumlah_hari'];
+      tanggalAkhirCuti = lastCutiData['tanggal_akhir'];
+      tanggalAwalCuti = lastCutiData['tanggal_awal'];
+      if (lastCutiData['status'] === null){
+        statusCuti = 'Belum di proses';
+      }else{
+        if (lastCutiData['status'] === 0){
+          statusCuti = 'Ditolak';
+        }else{
+          statusCuti = 'Diterima';
+        }
+      }
+    }else{
+      deskripsiCuti = '';
+      jumlahHariCuti = '';
+      tanggalAkhirCuti = '';
+      tanggalAwalCuti = '';
+      statusCuti = '';
+    }
+
+    if (lastLemburData !== null){
+      tanggalLembur = lastLemburData['tanggal'];
+      jamAwalLembur = lastLemburData['jam_awal'];
+      jamAkhirLembur = lastLemburData['jam_akhir'];
+      if (lastLemburData['status_kerja'] === 1) {
+        statusKerjaLembur = 'Di Kantor';
+      }else if (lastLemburData['status_kerja'] === 2) {
+        statusKerjaLembur = 'Di Rumah';
+      }
+
+      if (lastLemburData['status'] === null){
+        statusLembur = 'Belum di proses';
+      }else{
+        if (lastLemburData['status'] === 0){
+          statusLembur = 'Ditolak';
+        }else{
+          statusLembur = 'Diterima';
+        }
+      }
+
+    }else{
+      tanggalLembur = '';
+      jamAwalLembur = '';
+      jamAkhirLembur = '';
+      statusKerjaLembur = '';
+      statusLembur = '';
+    }
+
+    // console.log(liburNasional)
+    const nextNationalHoliday = useMemo(() => {
+      const currentDate = new Date();
+      const currentDateFormatted = moment(currentDate).format('YYYY-MM-DD');
+      console.log(currentDateFormatted);
+
+      const upcomingHolidays = liburNasional.filter(holiday => holiday['tanggal'] > currentDateFormatted);
+
+      if (upcomingHolidays.length > 0) {
+          return upcomingHolidays[0]; 
+      }
+
+      return null; 
+    }, []);
+
+    if (nextNationalHoliday !== null){
+      deskripsiLibur = nextNationalHoliday['deskripsi'];
+      tanggalLibur = nextNationalHoliday['tanggal'];
+    }else{
+      deskripsiLibur = '';
+      tanggalLibur = '';
+    }
+
+    // console.log(1);
+    // console.log(nextNationalHoliday);
+    // console.log(2);
 
     return (
-        
         <View style={{ flex: 1 }}>
+                <StatusBar hidden={false} />
+
   <View style={[styles.containerContent, { paddingTop: 10, flex: 1 }]}>
     <View style={{ justifyContent: 'flex-end' }}>
       <Text style={[styles.styleText]}>Welcome, {dataProfile.name}</Text>
@@ -75,14 +187,114 @@ export default function Home() {
       </ButtonImage>
     </View>
     <View style={{ marginTop: 10 }}>
-      <Text style={[styles.styleText, { fontSize: 18, color: '#324F5E' }]}>Data Terbaru</Text>
-      <ScrollView contentContainerStyle={{ paddingTop: 10 }} showsVerticalScrollIndicator={false}>
+      <Text style={[styles.styleText, { fontSize: 18, color: '#324F5E', fontWeight: '600' }]}>Data Terbaru</Text>
+      {/* <ScrollView contentContainerStyle={{ paddingTop: 10 }} showsVerticalScrollIndicator={false}>
         <Carousel data={dataCarousel} autoPlay={false} />
-      </ScrollView>
+      </ScrollView> */}
+      
     </View>
+    <ScrollView
+      horizontal={true}
+      style={[styles.container]}
+      contentContainerStyle={styles.contentContainer}
+      snapToAlignment="center"
+      decelerationRate="fast"
+      showsHorizontalScrollIndicator={false} // Hide horizontal scroll indicator
+      showsVerticalScrollIndicator={false}   // Hide vertical scroll indicator
+      bounces={false}
+    >
+      <LinearGradient colors={[GlobalColors.RASTEKBIRU, GlobalColors.RASTEKUNGU]} style={styles.item}>
+        <View>
+          <View style={{flexDirection:'row', paddingTop:14, paddingLeft:14}}>
+            <Text style={{fontWeight:'800', fontSize:18, color:'white'}}>Kehadiran</Text>
+            <Text style={{marginLeft:90, fontSize:14, color:'white'}}>{tanggal}</Text>
+          </View>
+          <View style={{flexDirection:'row', paddingTop:10, paddingLeft:42}}>
+            <View>
+              <Text style={{paddingBottom:10, fontSize:14, color:'white'}}>Jam Masuk</Text>
+              <Text style={{paddingBottom:10, fontSize:14, color:'white'}}>Jam Keluar</Text>
+              <Text style={{ fontSize:14, color:'white'}}>Status</Text>
+            </View>
+            <View style={{marginLeft:42}}>
+              <Text style={{paddingBottom:10, fontSize:14, color:'white'}}>: {jamMasuk}</Text>
+              <Text style={{paddingBottom:10, fontSize:14, color:'white'}}>: {jamKeluar}</Text>
+              <Text style={{ fontSize:14, color:'white'}}>: {statusText}</Text>
+            </View>
+          </View>
+        </View>
+      </LinearGradient>
+      <LinearGradient colors={[GlobalColors.RASTEKBIRU, GlobalColors.RASTEKUNGU]} style={styles.item}>
+      <View>
+          <View style={{flexDirection:'row', paddingTop:14, paddingLeft:14}}>
+            <Text style={{fontWeight:'800', fontSize:18, color:'white'}}>Cuti</Text>
+          </View>
+          <View style={{flexDirection:'row', paddingLeft:42}}>
+            <View>
+              <Text style={{fontSize:14, color:'white'}}>Tanggal Awal</Text>
+              <Text style={{fontSize:14, color:'white'}}>Tanggal Akhir</Text>
+              <Text style={{fontSize:14, color:'white'}}>Jumlah Hari</Text>
+              <Text style={{fontSize:14, color:'white'}}>Deskripsi</Text>
+              <Text style={{fontSize:14, color:'white'}}>Status</Text>
+            </View>
+            <View style={{marginLeft:42}}>
+              <Text style={{fontSize:14, color:'white'}}>: {tanggalAwalCuti}</Text>
+              <Text style={{fontSize:14, color:'white'}}>: {tanggalAkhirCuti}</Text>
+              <Text style={{fontSize:14, color:'white'}}>: {jumlahHariCuti}</Text>
+              <Text style={{fontSize:14, color:'white'}}>: {deskripsiCuti}</Text>
+              <Text style={{fontSize:14, color:'white'}}>: {statusCuti}</Text>
+            </View>
+          </View>
+        </View>
+      </LinearGradient>
+      <LinearGradient colors={[GlobalColors.RASTEKBIRU, GlobalColors.RASTEKUNGU]} style={styles.item}>
+      <View>
+          <View style={{flexDirection:'row', paddingTop:14, paddingLeft:14}}>
+            <Text style={{fontWeight:'800', fontSize:18, color:'white'}}>Lembur</Text>
+            <Text style={{marginLeft:90, fontSize:14, color:'white'}}>{tanggalLembur}</Text>
+          </View>
+          <View style={{flexDirection:'row', paddingTop:10, paddingLeft:42}}>
+            <View>
+              <Text style={{paddingBottom:5, fontSize:14, color:'white'}}>Jam Awal</Text>
+              <Text style={{paddingBottom:5, fontSize:14, color:'white'}}>Jam Akhir</Text>
+              <Text style={{paddingBottom:5, fontSize:14, color:'white'}}>Status Kerja</Text>
+              <Text style={{ fontSize:14, color:'white'}}>Status</Text>
+            </View>
+            <View style={{marginLeft:42}}>
+              <Text style={{paddingBottom:5, fontSize:14, color:'white'}}>: {jamAwalLembur}</Text>
+              <Text style={{paddingBottom:5, fontSize:14, color:'white'}}>: {jamAkhirLembur}</Text>
+              <Text style={{paddingBottom:5, fontSize:14, color:'white'}}>: {statusKerjaLembur}</Text>
+              <Text style={{ fontSize:14, color:'white'}}>: {statusLembur}</Text>
+            </View>
+          </View>
+        </View>
+      </LinearGradient>
+      <LinearGradient colors={[GlobalColors.RASTEKBIRU, GlobalColors.RASTEKUNGU]} style={styles.item}>
+      <View>
+          <View style={{flexDirection:'row', paddingTop:14, paddingLeft:14}}>
+            <Text style={{fontWeight:'800', fontSize:18, color:'white'}}>Libur Nasional</Text>
+          </View>
+          <View style={{flexDirection:'row', paddingLeft:42, paddingTop:10}}>
+            <View>
+              <Text style={{fontSize:14, color:'white', paddingBottom:10}}>Deskripsi</Text>
+              <Text style={{fontSize:14, color:'white'}}>Tanggal</Text>
+            </View>
+            <View style={{marginLeft:20}}>
+            <Text style={{ fontSize: 14, color: 'white', paddingBottom:10 }}>: {deskripsiLibur.length > 20 ? `${deskripsiLibur.substr(0, 20)}...` : deskripsiLibur}
+            </Text>
+              <Text style={{fontSize:14, color:'white'}}>: {tanggalLibur}</Text>
+            </View>
+          </View>
+        </View>
+      </LinearGradient>
+      {/* Add more items here */}
+    </ScrollView>
+    
+      
+    
+    
     <View style={{ flex: 1, justifyContent: 'flex-end' }}>
       <View style={styles.boxBawah}>
-        <Text style={{fontSize:18, fontWeight:'600', color:'324F5E', paddingTop:20}}>Menu</Text>
+        <Text style={{fontSize:18, fontWeight:'700', color:'#324F5E', paddingTop:20}}>Menu</Text>
 
         <View style={[styles.gridContainer,{paddingTop:20}]}>
             <TouchableOpacity onPress={() => navigation.navigate(ROUTES.DEMOLISTVIEW)}>
@@ -128,115 +340,8 @@ export default function Home() {
       
     </View>
   </View>
+  
 </View>
-
-        // <LinearGradient colors={['#EAEAEA', '#EAEAEA']} start={{ x: 0, y: 0.5 }}
-        // end={{ x: 1, y: 0.5 }} style={styles.containerContent}>
-        //     <Text style={[styles.TextSyle, {marginTop:20}, {fontSize:14}, {color:'#35022D'} ]}>Welcome,</Text>
-        //     <Text style={[styles.TextSyle, {fontSize:32},{color:'#35022D'} ]}>{dataProfile.name}</Text>
-        //     <ButtonImage
-        //         children={GlobalImages.IMG_ACCOUNTDEFAULT}
-        //         Color1='#EAEAEA' 
-        //         Color2='#EAEAEA' 
-        //         styleButton={[styles.boxSize, {height:50, width:50, position: 'absolute',
-        //         top: 20,
-        //         left: 20,}]} 
-        //         imageSize={{height:50, width:50}}
-        //         onPress={() => navigation.navigate(ROUTES.PROFILE)}
-        //     >
-        //     </ButtonImage>
-            
-
-
-
-        //     {/* <LinearGradient  colors={['white', 'white']} style={styles.container}> */}
-            
-        //     {/* <LinearGradient colors={[GlobalColors.RASTEKBIRU, GlobalColors.RASTEKUNGU]} 
-        //         start={{ x: 0, y: 0 }} 
-        //         end={{ x: 1, y: 0 }} 
-        //         style={[styles.box]}> */}
-        //     <View style={[styles.box, {backgroundColor: '#1C305E'}]}>
-        //             <Text style={[styles.textStyle, {marginTop: '20%'},{marginLeft: 30}]}>Menu</Text>
-        //             <View style={[styles.gridContainer]}>
-        //                 <View style={[styles.gridContainer, {flexDirection:'column'}]}>
-        //                     <ButtonImage children={GlobalImages.IMGABSEN} 
-        //                         Color1='#EAEAEA' 
-        //                         Color2='#EAEAEA' 
-        //                         styleButton={styles.boxSize} 
-        //                         onPress={() => navigation.navigate(ROUTES.DEMOLISTVIEW)}>
-        //                     </ButtonImage>
-        //                     <Text style={[{color:'white'}, {fontWeight:'bold'}]}>Presensi</Text>
-        //                 </View>
-        //                 <View style={[styles.gridContainer, {flexDirection:'column'}]}>
-        //                     {/* <ButtonText styleButton={styles.boxSize} onPress={() => navigation.navigate(ROUTES.CUTI)}>List View Data Cuti</ButtonText> */}
-        //                     <ButtonImage children={GlobalImages.IMGCUTI} 
-        //                         Color1='#EAEAEA' 
-        //                         Color2='#EAEAEA' 
-        //                         styleButton={styles.boxSize} 
-        //                         onPress={() => navigation.navigate(ROUTES.CUTI)}>
-        //                     </ButtonImage>
-        //                     <Text style={[{color:'white'}, {fontWeight:'bold'}]}>Cuti</Text>
-
-        //                 </View>
-        //             </View>
-        //             <View style={styles.gridContainer}>
-        //                 <View style={[styles.gridContainer, {flexDirection:'column'}]}>
-                        // <ButtonImage children={GlobalImages.IMGLEMBUR} 
-        //                         Color1='#EAEAEA' 
-        //                         Color2='#EAEAEA' 
-        //                         styleButton={styles.boxSize} 
-        //                         onPress={() => navigation.navigate(ROUTES.LEMBUR)}>
-        //                     </ButtonImage>                            
-        //                     <Text style={[{color:'white'}, {fontWeight:'bold'}]}>Lembur</Text>
-
-        //                 </View>
-        //                 {/* <View style={[styles.gridContainer, {flexDirection:'column'}]}>
-
-        //                 <ButtonText styleButton={styles.boxSize} onPress={handleLogout}>SIGN OUT</ButtonText>
-        //                 </View> */}
-        //             </View>
-        //     </View>
-        //     {/* </LinearGradient> */}
-        //     <View style={[styles.overlay, {shadowOffset: {
-        //     width: shadowOffsetWidth,
-        //     height: -shadowOffsetHeight,
-        //   },
-        //   shadowOpacity,
-        //   shadowRadius,}]}>
-        //         <View style={[{width: GlobalWidths[70]}, {height: GlobalHeights[15], flex: 1, justifyContent: 'center'}]}>
-        //             <Text style={[{color:'black', fontSize:14, fontWeight:'bold', alignSelf:'center', marginBottom:20}]}> DATA ABSEN TERAKHIR</Text>
-        //             {lastAbsenData ? (
-        //                 <>
-        //                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: 10, paddingLeft: 10 }}>
-        //                     <Text style={[{ color: 'black', fontSize: 14, fontWeight: 'bold', width: 100 }]}>Tanggal</Text>
-        //                     <Text style={[{ color: 'black', fontSize: 14, fontWeight: 'bold' }]}>: {moment(lastAbsenData.tanggal).format("dddd, DD MMMM YYYY")}</Text>
-        //                 </View>
-        //                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: 10, paddingLeft: 10 }}>
-        //                     <Text style={[{ color: 'black', fontSize: 14, fontWeight: 'bold', width: 100 }]}>Jam Masuk</Text>
-        //                     <Text style={[{ color: 'black', fontSize: 14, fontWeight: 'bold' }]}>: {lastAbsenData.jam_masuk}</Text>
-        //                 </View>
-        //                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', paddingLeft: 10 }}>
-        //                     <Text style={[{ color: 'black', fontSize: 14, fontWeight: 'bold', width: 100 }]}>Jam Keluar</Text>
-        //                     <Text style={[{ color: 'black', fontSize: 14, fontWeight: 'bold' }]}>: {lastAbsenData.jam_keluar}</Text>
-        //                 </View>
-        //                 </>
-        //             ) : (
-        //                 <Text>Tidak ada data absensi terakhir</Text>
-        //             )}
-        //         </View>
-        //     </View>
-
-        //     {/* </LinearGradient> */}
-        //     <ButtonImage children={GlobalImages.IMGLOGOUT} 
-        //                         Color1='#EAEAEA' 
-        //                         Color2='#EAEAEA' 
-        //                         styleButton={[styles.boxSize, {height:40, width:40, position: 'absolute',
-        //                         top: 20,
-        //                         right: 20,}]} 
-        //                         imageSize={{height:40, width:40}}
-        //                         onPress={handleLogout}>
-        //                     </ButtonImage>      
-        // </LinearGradient>
     )
 }
 
@@ -244,7 +349,7 @@ const styles = StyleSheet.create({
     styleText: {
         fontSize:20,
         color:'black',
-        fontWeight:'600',
+        fontWeight:'900',
         marginLeft:20,
         marginTop:20,
         backgroundColor:'#F8F9F9S'
@@ -344,13 +449,22 @@ const styles = StyleSheet.create({
       container: {
         flex: 1,
         flexDirection: 'row', // This is important for horizontal scrolling
+        marginBottom : GlobalHeights[30]
       },
       item: {
-        width: 200,
-        height: 200,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'lightgray',
+        width: GlobalWidths[80],
+        height: GlobalHeights[20],
+        // justifyContent: 'center',
+        // alignItems: 'center',
+        backgroundColor: 'black',
         marginRight: 10,
+        borderRadius:10
+      },
+      
+      contentContainer: {
+        flexDirection: 'row',
+        paddingHorizontal: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
       },
 })

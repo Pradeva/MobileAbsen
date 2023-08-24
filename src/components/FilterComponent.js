@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 import moment from 'moment';
+import { GlobalHeights } from '../constants/Styles';
 
 const FilterComponent = ({ onFilterChange }) => {
   const [selectedMonth, setSelectedMonth] = useState('');
@@ -71,6 +72,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginVertical: 10,
+    height:GlobalHeights[20]
   },
   filterButton: {
     padding: 15,

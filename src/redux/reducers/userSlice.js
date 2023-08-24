@@ -22,6 +22,9 @@ export const userSlice = createSlice({
             const generate = generateCaptcha()
             state.dataCaptcha = generate.arrCaptcha;
             state.textCaptcha = generate.captcha;
+        },
+        resetMsgApiUser: (state, action) => {
+            state.msgApi = ''
         }
     },
     extraReducers: (builder) => {
@@ -102,6 +105,7 @@ export const userSlice = createSlice({
         builder.addCase(fetchLogout.fulfilled, (state, action) => {
             state.isLoading = false;
             state.msgApi = "Logout";
+            state.dataProfile = action.payload;
         })
         builder.addCase(fetchLogout.rejected, (state, action) => {
             state.isLoading = false;
@@ -109,5 +113,5 @@ export const userSlice = createSlice({
     },
 })
 
-export const { getCaptcha } = userSlice.actions;
+export const { getCaptcha, resetMsgApiUser } = userSlice.actions;
 export default userSlice.reducer;

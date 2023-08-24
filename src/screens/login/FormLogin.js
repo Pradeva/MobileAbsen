@@ -55,6 +55,8 @@ export default function FormLogin() {
         }
     }, [dataProfile])
 
+    // console.log(dataProfile)
+
     return (
         <>
             <ModalLoader isLoading={isLoading} />

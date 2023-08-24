@@ -13,7 +13,7 @@ export default function FlashScreen() {
             colors={[GlobalColors.RASTEKBIRU, GlobalColors.RASTEKUNGU]}
             start={{ x: 0.5, y: 0.1 }}
         >
-            <StatusBar hidden={true} />
+            <StatusBar hidden={false} />
             <Image source={GlobalImages.IMGLOGO} style={{ width: 100, height: 100 }} />
         </LinearGradient>
     )

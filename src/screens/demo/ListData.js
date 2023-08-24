@@ -3,7 +3,7 @@ import React from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { ContainerView, ModalForm, ModalLoader, FilterComponent } from '../../components';
 import { dataFilm } from '../../constants/Api';
-import { GlobalColors, GlobalFontSizes, kDefaultPadding } from '../../constants/Styles';
+import { GlobalColors, GlobalFontSizes, GlobalHeights, kDefaultPadding } from '../../constants/Styles';
 import textStyles from '../../constants/TextStyles';
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
@@ -146,7 +146,7 @@ export default function ListData() {
                 </View>
             </View>
             </ModalForm>
-            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.contentContainer}>
+            <ScrollView style={{height:GlobalHeights[80], marginBottom:10}}showsVerticalScrollIndicator={false} contentContainerStyle={styles.contentContainer}>
             {Object.keys(groupedData).map((month) => (
               <View key={month}>
                 {!filteredMonth && (

@@ -11,7 +11,7 @@ export default function Login() {
     return (
         <ContainerView>
             <ScrollView>
-                <StatusBar hidden={true} />
+                <StatusBar hidden={false} />
                 <View style={{ flex: 1 }}>
                     <View style={styles.parentLogo}>
                     <Image source={GlobalImages.IMGLOGO} style={{ width: 100, height: 100 }} />
